@@ -1,6 +1,16 @@
 class Rocket {
-  constructor(spaceship) {
-    this.position = spaceship.pointA.copy();
+  constructor(spaceship, source = 'A') {
+    switch (source) {
+      case 'B':
+        this.position = spaceship.pointB.copy();
+        break;
+      case 'C':
+        this.position = spaceship.pointC.copy();
+        break;
+      default:
+        this.position = spaceship.pointA.copy();
+        break;
+    }
     this.velocity = new Vector(0, 0); // spaceship.velocity.copy();
 
     let speed = new Vector(Math.cos(spaceship.theta), Math.sin(spaceship.theta));

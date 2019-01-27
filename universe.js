@@ -80,9 +80,20 @@ class Universe {
   }
 
   createRocket() {
-    let newRocket = new Rocket(this.spaceship);
-    this.dom.appendChild(newRocket.dom);
-    this.rockets.push(newRocket);
+    let newRocket = null;
+    if (this.levelCount <= 4) {
+      newRocket = new Rocket(this.spaceship, 'A');
+      this.dom.appendChild(newRocket.dom);
+      this.rockets.push(newRocket);
+    } else {
+      newRocket = new Rocket(this.spaceship, 'B');
+      this.dom.appendChild(newRocket.dom);
+      this.rockets.push(newRocket);
+
+      newRocket = new Rocket(this.spaceship, 'C');
+      this.dom.appendChild(newRocket.dom);
+      this.rockets.push(newRocket);
+    }
   }
 
   createAsteroid(x_, y_) {
