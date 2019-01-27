@@ -12,7 +12,7 @@ class Spaceship {
     this.velocity = new Vector(0, 0); //Math.random() - 0.5, Math.random() - 0.5);
     this.velocity.mult(10);
     this.acceleration = new Vector(0, 0);
-    this.theta = 0;
+    this.theta = -Math.PI / 2;
     this.dtheta = 0; // 0.5 / Math.PI;
 
     this.boostOn = false;
@@ -31,8 +31,9 @@ class Spaceship {
 
     this.color = colorGenerator(Math.random() * 255, Math.random() * 255, Math.random() * 255, 0.5);
     this.dom = document.createElementNS(SVGNS, 'polygon');
-    this.dom.setAttribute('fill', this.color);
-    this.dom.setAttribute('stroke', colorGenerator(50, 50, 50, 1));
+    // this.dom.setAttribute('fill', this.color);
+    // this.dom.setAttribute('stroke', colorGenerator(50, 50, 50, 1));
+    this.dom.setAttribute('class', 'ship');
   }
 
   touched(asteroid) {
@@ -48,18 +49,6 @@ class Spaceship {
     }
   }
 
-  checkObstacles(obstacles) {
-    this.acceleration.add(this.separation(obstacles));
-  }
-
-  checkBoids(boids) {
-    this.acceleration.add(this.separation(boids));
-    if (this.acceleration.norm() == 0) {
-      this.acceleration.add(this.cohesion(boids));
-    }
-    this.acceleration.add(this.alignment(boids));
-  }
-
   accelerate(fact) {
     let dAcc = new Vector(Math.cos(this.theta), Math.sin(this.theta));
     dAcc.mult(fact * 0.4);
@@ -67,7 +56,7 @@ class Spaceship {
   }
 
   rotate(fact) {
-    this.dtheta -= fact * Math.PI / 360;
+    this.dtheta -= fact * Math.PI / 45;
   }
 
   update() {
@@ -79,15 +68,20 @@ class Spaceship {
     }
     if (this.turnL) {
       this.rotate(1);
+      this.turnL = false;
     }
     if (this.turnR) {
       this.rotate(-1);
+      this.turnR = false;
     }
 
     this.theta += this.dtheta;
     this.velocity.add(this.acceleration);
+    // console.log(this.velocity.norm());
+    this.velocity.limitNorm(20);
     this.position.add(this.velocity);
     this.acceleration.mult(0);
+    this.velocity.mult(0.99);
   }
 
   show() {

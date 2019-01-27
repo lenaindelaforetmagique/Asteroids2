@@ -9,9 +9,6 @@ class Universe {
     this.asteroids = [];
     this.rockets = [];
 
-    // this.boids = [];
-    // this.obstacles = [];
-
     this.container = document.getElementById("container");
     this.dom = document.createElementNS(SVGNS, "svg");
     this.container.appendChild(this.dom);
@@ -22,10 +19,10 @@ class Universe {
 
     this.levelCount = 1;
     this.resetGame();
-
   }
 
   resetGame() {
+    this.alive = true;
     this.createSpaceship(this.viewBox.width / 2, this.viewBox.height / 2);
     this.killAllAsteroids();
     this.loadLevel();
@@ -37,27 +34,30 @@ class Universe {
   }
 
   loadLevel() {
+    this.textBlock.setTitle(this.levelCount);
     for (let i = 0; i < this.levelCount; i++) {
       let side = Math.random();
       let x = 0;
       let y = 0;
+      let dl = 14;
       if (side < 0.25) {
         //top
         x = Math.random() * this.viewBox.width;
-        y = -10;
+        y = -dl;
       } else if (side < 0.5) {
         //bottom
         x = Math.random() * this.viewBox.width;
-        y = this.viewBox.height + 10;
+        y = this.viewBox.height + dl;
       } else if (side < 0.75) {
         //left
-        x = -10;
+        x = -dl;
         y = Math.random() * this.viewBox.height;
       } else {
         // right
-        x = this.viewBox.height + 10;
+        x = this.viewBox.width + dl;
         y = Math.random() * this.viewBox.height;
       }
+      // console.log(x, y, side);
       this.createAsteroid(x, y);
     }
   }
@@ -107,8 +107,18 @@ class Universe {
 
     // KEYBOARD Events
     document.onkeydown = function(e) {
-      // console.log(e.key);
+      console.log(e.key);
       switch (e.key) {
+        case "PageUp":
+          thiz.levelCount += 1;
+          thiz.resetGame();
+          break;
+        case "PageDown":
+          thiz.levelCount -= 1;
+          thiz.resetGame();
+        case ' ':
+          thiz.resetGame();
+          break;
         case "Control":
           if (thiz.shootOff) {
             thiz.createRocket();
@@ -175,27 +185,6 @@ class Universe {
 
 
     // MOUSE events
-    // this.container.addEventListener("mousedown", function(e) {
-    //   e.preventDefault();
-    //   if (!thiz.clickFired) {
-    //     thiz.mouseDown = true;
-    //     thiz.mouseClick(e.clientX, e.clientY);
-    //   }
-    // }, false);
-    //
-    // this.container.addEventListener("mousemove", function(e) {
-    //   e.preventDefault();
-    //   if (thiz.mouseDown) {
-    //     thiz.mouseClick(e.clientX, e.clientY);
-    //   }
-    // }, false);
-    //
-    // this.container.addEventListener("mouseup", function(e) {
-    //   e.preventDefault();
-    //   thiz.mouseDown = false;
-    //   thiz.clickFired = false;
-    // }, false);
-
     this.container.addEventListener("wheel", function(e) {
       e.preventDefault();
       let k = 1.1;
@@ -344,12 +333,13 @@ class Universe {
       i++
     }
     if (touched) {
-      alert("perdu");
-      this.resetGame();
+      this.alive = false;
+      // alert("perdu");
+      // this.resetGame();
     }
 
     if (this.asteroids.length == 0) {
-      alert("niveau suivant !");
+      // alert("niveau suivant !");
       this.nextLevel();
     }
   }
@@ -371,9 +361,10 @@ class Universe {
     let now = Date.now();
     if (now - this.lastUpdate > 20) {
       this.lastUpdate = now;
-      this.update();
-      this.show();
-
+      if (this.alive) {
+        this.update();
+        this.show();
+      }
     }
   }
 
@@ -503,7 +494,7 @@ class TextBlock {
 
     this.text = document.createElementNS(SVGNS, "text");
     this.dom.appendChild(this.text);
-    this.text.setAttributeNS(null, "x", 0);
+    this.text.setAttributeNS(null, "x", 5);
     this.text.setAttributeNS(null, "y", 30);
     this.text.setAttributeNS(null, "fill", "rgba(0,0,0,0.7)");
 
@@ -520,34 +511,26 @@ class TextBlock {
     this.btn1 = document.createElementNS(SVGNS, "text");
     this.btn1.setAttributeNS(null, "fill", "rgba(0,0,0,0.7)");
     this.dom.appendChild(this.btn1);
-    this.btn1.setAttributeNS(null, "class", "button");
+    // this.btn1.setAttributeNS(null, "class", "button");
     this.btn1.setAttributeNS(null, "font-size", "12px");
-    this.btn1.setAttributeNS(null, "x", 0);
+    this.btn1.setAttributeNS(null, "x", 5);
     this.btn1.setAttributeNS(null, "y", 60);
+    this.btn1.textContent = "CTRL to shoot, arrows to move, space to restart. Try to stay alive! ";
 
-    this.title.textContent = "Asteroids 2";
-    this.btn1_status = true;
-    this.btn1_set();
+    // this.title.textContent = "Asteroids 2 - Level 1";
 
     this.log = document.createElementNS(SVGNS, "text");
     this.log.setAttributeNS(null, "fill", "rgba(0,0,0,0.7)");
     this.dom.appendChild(this.log);
     this.log.setAttributeNS(null, "class", "button");
     this.log.setAttributeNS(null, "font-size", "12px");
-    this.log.setAttributeNS(null, "x", 0);
+    this.log.setAttributeNS(null, "x", 5);
     this.log.setAttributeNS(null, "y", 80);
-
-
   }
 
-  btn1_toggle(newvalue) {
-    this.btn1_status = newvalue;
-    this.btn1_set();
-  }
-
-  btn1_set() {
+  setTitle(level) {
     // this.btn1.textContent = this.btn1_status ? "Create Boids or Obstacles: BOIDS" : "Create Boids or Obstacles: OBSTACLES";
-    this.btn1.textContent = "CTRL to shoot, arrows to move. Try to stay alive ";
+    this.title.textContent = "Asteroids 2 - Level " + level;
   }
 
 }

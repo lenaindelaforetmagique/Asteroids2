@@ -22,14 +22,33 @@ svg, legend {
   width: 100%;
 }
 
+svg text {
+  fill: #CCCCCC;
+}
+
 .button {
   cursor: pointer;
+}
+
+svg polygon.ship {
+  fill: rgba(255, 255, 255, 0.1);
+  stroke: white;
+}
+
+svg polygon.asteroid {
+  fill: rgba(255, 255, 255, 0.05);
+  stroke: white;
+}
+
+svg ellipse.rocket {
+  fill: rgba(255, 255, 255, 1);
 }
 
 #container {
   margin: 0;
   padding: 0;
-  background: #ADD8E6;
+  background: black;
+  /* #ADD8E6; */
   height: 100%;
   /* overflow: hidden; */
 }

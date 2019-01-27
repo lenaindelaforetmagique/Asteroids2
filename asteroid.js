@@ -1,8 +1,9 @@
 class Asteroid {
   constructor(x_, y_, size_ = 64, color_ = "") {
     this.position = new Vector(x_, y_);
-    this.velocity = new Vector(Math.random() - 0.5, Math.random() - 0.5);
-    this.velocity.mult(10);
+    let theta = Math.random() * Math.PI * 2;
+    this.velocity = new Vector(Math.cos(theta), Math.sin(theta));
+    this.velocity.mult(0 * Math.random(3) + 2);
     this.acceleration = new Vector(0, 0);
     this.theta = 0;
     this.dtheta = 0; // 0.5 / Math.PI;
@@ -17,8 +18,9 @@ class Asteroid {
       this.color = color_;
     }
     this.dom = document.createElementNS(SVGNS, 'polygon');
-    this.dom.setAttribute('fill', this.color);
-    this.dom.setAttribute('stroke', colorGenerator(50, 50, 50, 1));
+    this.dom.setAttribute("class", "asteroid");
+    // this.dom.setAttribute('fill', this.color);
+    // this.dom.setAttribute('stroke', colorGenerator(50, 50, 50, 1));
   }
 
   update() {
