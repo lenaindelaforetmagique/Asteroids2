@@ -7,7 +7,8 @@ listXYToPolylinePoints = function(listX, listY) {
 }
 
 class Spaceship {
-  constructor(x_, y_) {
+  constructor(x_, y_, parent_) {
+    this.parent = parent_;
     this.position = new Vector(x_, y_);
     this.velocity = new Vector(0, 0); //Math.random() - 0.5, Math.random() - 0.5);
     this.velocity.mult(10);
@@ -19,6 +20,7 @@ class Spaceship {
     this.brakeOn = false;
     this.turnL = false;
     this.turnR = false;
+    this.shootOn = false;
 
     this.pointA = this.position.copy();
     this.pointB = this.position.copy();
@@ -49,6 +51,26 @@ class Spaceship {
     }
   }
 
+  shoot() {
+    let newRockets = [];
+
+    let nb = Math.trunc((this.parent.levelCount) / 4) + 1;
+    let dalpha = Math.PI / 6 / nb;
+    for (let i = 0; i < nb; i++) {
+      let alpha = this.theta + (nb - 1 - 2 * i) * dalpha / 2;
+      console.log(nb, alpha, this.theta);
+      let rocketVelocity = new Vector(Math.cos(alpha), Math.sin(alpha));
+      rocketVelocity.mult(7);
+      rocketVelocity.add(this.velocity);
+      newRockets.push(new Rocket(this.pointA.copy(), rocketVelocity));
+    }
+
+    for (let rocket of newRockets) {
+      this.parent.addRocket(rocket);
+    }
+    this.shootOn = false;
+  }
+
   accelerate(fact) {
     let dAcc = new Vector(Math.cos(this.theta), Math.sin(this.theta));
     dAcc.mult(fact * 0.4);
@@ -60,6 +82,9 @@ class Spaceship {
   }
 
   update() {
+    if (this.shootOn) {
+      this.shoot();
+    }
     if (this.boostOn) {
       this.accelerate(1);
     }

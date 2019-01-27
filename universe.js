@@ -75,25 +75,14 @@ class Universe {
       this.dom.removeChild(this.spaceship.dom);
     }
 
-    this.spaceship = new Spaceship(x_, y_);
+    this.spaceship = new Spaceship(x_, y_, this);
     this.dom.appendChild(this.spaceship.dom);
   }
 
-  createRocket() {
-    let newRocket = null;
-    if (this.levelCount <= 4) {
-      newRocket = new Rocket(this.spaceship, 'A');
-      this.dom.appendChild(newRocket.dom);
-      this.rockets.push(newRocket);
-    } else {
-      newRocket = new Rocket(this.spaceship, 'B');
-      this.dom.appendChild(newRocket.dom);
-      this.rockets.push(newRocket);
 
-      newRocket = new Rocket(this.spaceship, 'C');
-      this.dom.appendChild(newRocket.dom);
-      this.rockets.push(newRocket);
-    }
+  addRocket(rocket) {
+    this.dom.appendChild(rocket.dom);
+    this.rockets.push(rocket);
   }
 
   createAsteroid(x_, y_) {
@@ -118,7 +107,7 @@ class Universe {
 
     // KEYBOARD Events
     document.onkeydown = function(e) {
-      console.log(e.key);
+      // console.log(e.key);
       switch (e.key) {
         case "PageUp":
           thiz.levelCount += 1;
@@ -132,7 +121,8 @@ class Universe {
           break;
         case "Control":
           if (thiz.shootOff) {
-            thiz.createRocket();
+            thiz.spaceship.shootOn = true;
+            // createRocket();
             thiz.shootOff = false;
           }
           break;
@@ -156,6 +146,7 @@ class Universe {
     document.onkeyup = function(e) {
       switch (e.key) {
         case "Control":
+          thiz.spaceship.shoonOn = false;
           thiz.shootOff = true;
           break;
         case "ArrowLeft":
