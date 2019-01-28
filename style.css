@@ -69,12 +69,12 @@ svg rectangle.bg {
   fill: black;
 }
 
-svg polygon.ship {
+g.ship {
   fill: rgba(255, 255, 255, 0.1);
   stroke: white;
 }
 
-svg polygon.asteroid {
+g.asteroid {
   fill: rgba(255, 255, 255, 0.05);
   stroke: white;
 }

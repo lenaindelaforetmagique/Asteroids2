@@ -1,11 +1,3 @@
-listXYToPolylinePoints = function(listX, listY) {
-  let res = "";
-  for (let i = 0; i < listX.length; i++) {
-    res += listX[i] + ',' + listY[i] + ' ';
-  }
-  return res;
-}
-
 class Spaceship {
   constructor(x_, y_, parent_) {
     this.parent = parent_;
@@ -13,7 +5,7 @@ class Spaceship {
     this.velocity = new Vector(0, 0); //Math.random() - 0.5, Math.random() - 0.5);
     this.velocity.mult(10);
     this.acceleration = new Vector(0, 0);
-    this.theta = -Math.PI / 2;
+    this.theta = 0;
     this.dtheta = 0; // 0.5 / Math.PI;
 
     this.boostOn = false;
@@ -22,19 +14,14 @@ class Spaceship {
     this.turnR = false;
     this.shootOn = false;
 
-    this.pointA = this.position.copy();
-    this.pointB = this.position.copy();
-    this.pointC = this.position.copy();
-
     this.size = 30;
 
-    // this.maxForce = 1;
-    // this.maxSpeed = 4;
+    this.polygon = new Polygon(this.parent);
+    this.polygon.addPoint(new Vector(0, this.size));
+    this.polygon.addPoint(new Vector(-this.size / 2, -this.size / 2));
+    this.polygon.addPoint(new Vector(this.size / 2, -this.size / 2));
 
-    this.color = colorGenerator(Math.random() * 255, Math.random() * 255, Math.random() * 255, 0.5);
-    this.dom = document.createElementNS(SVGNS, 'polygon');
-    // this.dom.setAttribute('fill', this.color);
-    // this.dom.setAttribute('stroke', colorGenerator(50, 50, 50, 1));
+    this.dom = this.polygon.dom;
     this.dom.setAttribute('class', 'ship');
   }
 
@@ -43,8 +30,8 @@ class Spaceship {
     dist.sub(asteroid.position);
     dist = dist.norm();
     if (dist < this.size / 2 + asteroid.size / 2) {
-      this.color = colorGenerator(Math.random() * 255, Math.random() * 255, Math.random() * 255, 0.5);
-      this.dom.setAttribute('fill', this.color);
+      // this.color = colorGenerator(Math.random() * 255, Math.random() * 255, Math.random() * 255, 0.5);
+      // this.dom.setAttribute('fill', this.color);
       return true;
     } else {
       return false;
@@ -59,10 +46,10 @@ class Spaceship {
     for (let i = 0; i < nb; i++) {
       let alpha = this.theta + (nb - 1 - 2 * i) * dalpha / 2;
       // console.log(nb, alpha, this.theta);
-      let rocketVelocity = new Vector(Math.cos(alpha), Math.sin(alpha));
+      let rocketVelocity = new Vector(Math.sin(alpha), -Math.cos(alpha));
       rocketVelocity.mult(7);
       rocketVelocity.add(this.velocity);
-      newRockets.push(new Rocket(this.pointA.copy(), rocketVelocity));
+      newRockets.push(new Rocket(this.polygon.points[0].copy(), rocketVelocity));
     }
 
     for (let rocket of newRockets) {
@@ -72,7 +59,7 @@ class Spaceship {
   }
 
   accelerate(fact) {
-    let dAcc = new Vector(Math.cos(this.theta), Math.sin(this.theta));
+    let dAcc = new Vector(Math.sin(this.theta), -Math.cos(this.theta));
     dAcc.mult(fact * 0.4);
     this.acceleration.add(dAcc);
   }
@@ -113,32 +100,9 @@ class Spaceship {
   show() {
     // console.log("lkjlk");
     // console.log(this.size);
-    let listPoints = "";
-    let dx = new Vector(Math.cos(this.theta), Math.sin(this.theta));
-    dx.normalize();
-    let dy = new Vector(-dx.y, dx.x);
 
-    this.pointA = this.position.copy();
-    this.pointB = this.position.copy();
-    this.pointC = this.position.copy();
 
-    dx.mult(this.size);
-    this.pointA.add(dx);
+    this.polygon.show(this.position, this.theta);
 
-    dx.div(2);
-
-    this.pointB.sub(dx);
-    this.pointC.sub(dx);
-
-    dy.mult(this.size / 2)
-    this.pointB.add(dy);
-    this.pointC.sub(dy);
-
-    this.dom.setAttribute('points',
-      listXYToPolylinePoints(
-        [this.pointA.x, this.pointB.x, this.pointC.x, this.pointA.x],
-        [this.pointA.y, this.pointB.y, this.pointC.y, this.pointA.y]
-      )
-    );
   }
 }

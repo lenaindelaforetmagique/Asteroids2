@@ -74,7 +74,6 @@ class Universe {
     if (this.spaceship != null) {
       this.dom.removeChild(this.spaceship.dom);
     }
-
     this.spaceship = new Spaceship(x_, y_, this);
     this.dom.appendChild(this.spaceship.dom);
   }
@@ -86,7 +85,7 @@ class Universe {
   }
 
   createAsteroid(x_, y_) {
-    this.addAsteroid(new Asteroid(x_, y_));
+    this.addAsteroid(new Asteroid(x_, y_, this));
   }
 
   addAsteroid(asteroid_) {
@@ -375,7 +374,7 @@ class Universe {
   }
 
   controlEdges(obj) {
-    let tol = 15;
+    let tol = 0;
     while (obj.position.x + tol < this.viewBox.xMin) {
       obj.position.x += this.viewBox.width + 2 * tol;
     }
