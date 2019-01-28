@@ -78,7 +78,7 @@ class Spaceship {
   }
 
   rotate(fact) {
-    this.dtheta -= fact * Math.PI / 45;
+    this.dtheta -= fact * Math.PI / 90;
   }
 
   update() {
@@ -93,11 +93,11 @@ class Spaceship {
     }
     if (this.turnL) {
       this.rotate(1);
-      this.turnL = false;
+      // this.turnL = false;
     }
     if (this.turnR) {
       this.rotate(-1);
-      this.turnR = false;
+      // this.turnR = false;
     }
 
     this.theta += this.dtheta;

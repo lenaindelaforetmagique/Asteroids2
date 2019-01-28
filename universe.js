@@ -108,34 +108,37 @@ class Universe {
     // KEYBOARD Events
     document.onkeydown = function(e) {
       // console.log(e.key);
-      switch (e.key) {
-        case "PageUp":
+      switch (e.key.toUpperCase()) {
+        case "PAGEUP":
+          e.preventDefault();
           thiz.levelCount += 1;
           thiz.resetGame();
           break;
-        case "PageDown":
+        case "PAGEDOWN":
+          e.preventDefault();
           thiz.levelCount -= 1;
           thiz.resetGame();
         case ' ':
           thiz.resetGame();
           break;
-        case "Control":
+        case 'S':
+          e.preventDefault();
           if (thiz.shootOff) {
             thiz.spaceship.shootOn = true;
             // createRocket();
             thiz.shootOff = false;
           }
           break;
-        case "ArrowLeft":
+        case "ARROWLEFT":
           thiz.spaceship.turnL = true;
           break;
-        case "ArrowRight":
+        case "ARROWRIGHT":
           thiz.spaceship.turnR = true;
           break;
-        case "ArrowUp":
+        case "ARROWUP":
           thiz.spaceship.boostOn = true;
           break;
-        case "ArrowDown":
+        case "ARROWDOWN":
           thiz.spaceship.brakeOn = true;
           break;
 
@@ -144,21 +147,21 @@ class Universe {
       }
     }
     document.onkeyup = function(e) {
-      switch (e.key) {
-        case "Control":
+      switch (e.key.toUpperCase()) {
+        case 'S':
           thiz.spaceship.shoonOn = false;
           thiz.shootOff = true;
           break;
-        case "ArrowLeft":
+        case "ARROWLEFT":
           thiz.spaceship.turnL = false;
           break;
-        case "ArrowRight":
+        case "ARROWRIGHT":
           thiz.spaceship.turnR = false;
           break;
-        case "ArrowUp":
+        case "ARROWUP":
           thiz.spaceship.boostOn = false;
           break;
-        case "ArrowDown":
+        case "ARROWDOWN":
           thiz.spaceship.brakeOn = false;
           break;
 
@@ -187,14 +190,14 @@ class Universe {
 
 
     // MOUSE events
-    this.container.addEventListener("wheel", function(e) {
-      e.preventDefault();
-      let k = 1.1;
-      if (e.deltaY > 0) {
-        k = 1 / k;
-      }
-      thiz.viewBox.scale(e.clientX, e.clientY, k);
-    }, false);
+    // this.container.addEventListener("wheel", function(e) {
+    //   e.preventDefault();
+    //   let k = 1.1;
+    //   if (e.deltaY > 0) {
+    //     k = 1 / k;
+    //   }
+    //   thiz.viewBox.scale(e.clientX, e.clientY, k);
+    // }, false);
 
 
     // TOUCH events
@@ -253,9 +256,9 @@ class Universe {
     //
 
     // OTHER events
-    window.onresize = function(e) {
-      thiz.viewBox.resize();
-    }
+    // window.onresize = function(e) {
+    //   thiz.viewBox.resize();
+    // }
 
     window.onerror = function(msg, source, noligne, nocolonne, erreur) {
       let str = "";
@@ -394,8 +397,8 @@ class ViewBox {
     this.parent = parent_;
     this.xMin = 0;
     this.yMin = 0;
-    this.width = window.innerWidth;
-    this.height = window.innerHeight;
+    this.width = 600; //window.innerWidth;
+    this.height = 600; //window.innerHeight;
     this.set();
   }
 
@@ -518,7 +521,7 @@ class TextBlock {
     this.btn1.setAttributeNS(null, "font-size", "12px");
     this.btn1.setAttributeNS(null, "x", 5);
     this.btn1.setAttributeNS(null, "y", 60);
-    this.btn1.textContent = "CTRL to shoot, arrows to move, space to restart. Try to stay alive! ";
+    this.btn1.textContent = "'S' to shoot, arrows to move, space to restart. Try to stay alive! ";
 
     // this.title.textContent = "Asteroids 2 - Level 1";
 

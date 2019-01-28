@@ -4,30 +4,69 @@ html, body {
   height: 100%;
   overflow: hidden;
   font-family: 'Ubuntu Mono', monospace;
-  /* background-color: blue; */
+  background-color: #505050;
 }
 
-svg {
-  /* margin: 0; */
-  /* padding: 0; */
-  width: 100%;
-  height: 100%;
+#container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: black;
+  border: solid;
+  border-width: 2px;
+  border-color: #CCCCCC;
+}
+
+footer {
+  position: absolute;
+  top: 95%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  color: white;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:link {
+  color: #EEEEEE;
+}
+
+a:visited {
+  color: #EEEEEE;
+}
+
+a:hover {
+  color: gray;
+}
+
+a:active {
+  color: black;
 }
 
 svg, legend {
   position: absolute;
   left: 0px;
   top: 0px;
-  height: 100%;
-  width: 100%;
+  width: 100%
 }
 
 svg text {
-  fill: #CCCCCC;
+  fill: #DDDDDD;
 }
 
 .button {
   cursor: pointer;
+}
+
+svg rectangle.bg {
+  fill: black;
 }
 
 svg polygon.ship {
@@ -42,13 +81,4 @@ svg polygon.asteroid {
 
 svg ellipse.rocket {
   fill: rgba(255, 255, 255, 1);
-}
-
-#container {
-  margin: 0;
-  padding: 0;
-  background: black;
-  /* #ADD8E6; */
-  height: 100%;
-  /* overflow: hidden; */
 }
