@@ -58,7 +58,7 @@ class Spaceship {
     let dalpha = Math.PI / 6 / nb;
     for (let i = 0; i < nb; i++) {
       let alpha = this.theta + (nb - 1 - 2 * i) * dalpha / 2;
-      console.log(nb, alpha, this.theta);
+      // console.log(nb, alpha, this.theta);
       let rocketVelocity = new Vector(Math.cos(alpha), Math.sin(alpha));
       rocketVelocity.mult(7);
       rocketVelocity.add(this.velocity);
@@ -107,6 +107,7 @@ class Spaceship {
     this.position.add(this.velocity);
     this.acceleration.mult(0);
     this.velocity.mult(0.99);
+    this.dtheta *= 0.9;
   }
 
   show() {

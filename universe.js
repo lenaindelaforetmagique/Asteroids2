@@ -281,11 +281,12 @@ class Universe {
     while (i < this.rockets.length) {
       let rocket = this.rockets[i];
       rocket.update();
-      if (rocket.outOfBounds(this.viewBox)) {
+      if (rocket.stillAlive(this.viewBox)) {
+        this.controlEdges(rocket);
+        i++;
+      } else {
         this.dom.removeChild(rocket.dom);
         this.rockets.splice(i, 1);
-      } else {
-        i++;
       }
     }
 

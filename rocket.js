@@ -1,5 +1,6 @@
 class Rocket {
   constructor(position_, velocity_) {
+    this.creation = Date.now();
     this.position = position_;
     this.velocity = velocity_;
     this.acceleration = new Vector(0, 0);
@@ -28,13 +29,15 @@ class Rocket {
     this.dom.setAttribute('cy', this.position.y);
   }
 
-  outOfBounds(viewBox) {
-    return (
-      (this.position.x + this.size < viewBox.xMin) ||
-      (this.position.x - this.size > viewBox.xMin + viewBox.width) ||
-      (this.position.y + this.size < viewBox.yMin) ||
-      (this.position.y - this.size > viewBox.yMin + viewBox.height)
-    );
+  stillAlive(viewBox) {
+    let age = Date.now() - this.creation;
+    return age < 2000;
+    // return (
+    //   (this.position.x + this.size < viewBox.xMin) ||
+    //   (this.position.x - this.size > viewBox.xMin + viewBox.width) ||
+    //   (this.position.y + this.size < viewBox.yMin) ||
+    //   (this.position.y - this.size > viewBox.yMin + viewBox.height)
+    // );
   }
 
 }
