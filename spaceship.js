@@ -14,12 +14,39 @@ class Spaceship {
     this.turnR = false;
     this.shootOn = false;
 
-    this.size = 30;
+    this.size = 20;
 
     this.polygon = new PolygonOnTorus(this.parent);
-    this.polygon.addPoint(new Vector(0, -this.size));
-    this.polygon.addPoint(new Vector(this.size / 2, this.size / 2));
-    this.polygon.addPoint(new Vector(-this.size / 2, this.size / 2));
+    // // Triangle
+    // this.polygon.addPoint(new Vector(0, -this.size));
+    // this.polygon.addPoint(new Vector(this.size / 2, this.size / 2));
+    // this.polygon.addPoint(new Vector(-this.size / 2, this.size / 2));
+
+    // // W
+    // this.polygon.addPoint(new Vector(0, 0));
+    // this.polygon.addPoint(new Vector(10, 20));
+    // this.polygon.addPoint(new Vector(20, 0));
+    // this.polygon.addPoint(new Vector(10, -20));
+    // this.polygon.addPoint(new Vector(12, -24));
+    // this.polygon.addPoint(new Vector(24, 0));
+    // this.polygon.addPoint(new Vector(24 - 12 * 1.15, 0 + 24 * 1.15));
+    // this.polygon.addPoint(new Vector(0, 8));
+
+    // X-wing
+    this.polygon.addPoint(new Vector(1, -60));
+    this.polygon.addPoint(new Vector(8, 0));
+    this.polygon.addPoint(new Vector(39, 4));
+    this.polygon.addPoint(new Vector(40, -20));
+    this.polygon.addPoint(new Vector(41, -20));
+    this.polygon.addPoint(new Vector(41, 15));
+    this.polygon.addPoint(new Vector(40, 15));
+    this.polygon.addPoint(new Vector(40, 10));
+    this.polygon.addPoint(new Vector(8, 15));
+    this.polygon.addPoint(new Vector(6, 20));
+
+
+    this.polygon.closeSymY();
+    this.polygon.fact(0.5);
 
     this.dom = this.polygon.dom;
     this.dom.setAttribute('class', 'ship');
@@ -44,16 +71,15 @@ class Spaceship {
 
     let nb = Math.trunc((this.parent.levelCount) / 4) + 1;
     let dalpha = Math.PI / 6 / nb;
-    let rocketPosition = new Vector(0, -this.size);
+    let rocketPosition = new Vector(0, -30); //-this.size);
     rocketPosition.rotate(this.theta);
     rocketPosition.add(this.position);
     for (let i = 0; i < nb; i++) {
       let alpha = this.theta + (nb - 1 - 2 * i) * dalpha / 2;
       // console.log(this.theta, alpha);
       let rocketVelocity = new Vector(Math.sin(alpha), -Math.cos(alpha));
-      rocketVelocity.mult(7);
-      console.log(rocketVelocity.norm());
-      // rocketVelocity.add(this.velocity);
+      rocketVelocity.mult(10);
+      rocketVelocity.add(this.velocity);
       newRockets.push(new Rocket(rocketPosition, rocketVelocity));
     }
 
@@ -97,7 +123,7 @@ class Spaceship {
     this.velocity.limitNorm(20);
     this.position.add(this.velocity);
     this.acceleration.mult(0);
-    this.velocity.mult(0.99);
+    this.velocity.mult(0.98);
     this.dtheta *= 0.9;
 
     this.polygon.update(this.position, this.theta);

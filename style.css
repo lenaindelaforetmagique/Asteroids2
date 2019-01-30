@@ -58,7 +58,8 @@ svg, legend {
 }
 
 svg text {
-  fill: #DDDDDD;
+  fill: rgba(255, 255, 255, 0.7);
+  /* #DDDDDD; */
 }
 
 .button {
@@ -70,15 +71,15 @@ svg rectangle.bg {
 }
 
 g.ship {
-  fill: rgba(255, 255, 255, 0.1);
-  stroke: white;
+  fill: rgba(255, 0, 0, 0.5);
+  stroke: rgba(255, 255, 255, 0.7);
 }
 
 g.asteroid {
-  fill: rgba(255, 255, 255, 0.05);
-  stroke: white;
+  fill: rgba(255, 255, 255, 0.2);
+  /* stroke: white; */
 }
 
 svg ellipse.rocket {
-  fill: rgba(255, 255, 255, 1);
+  fill: rgba(255, 255, 255, 0.8);
 }

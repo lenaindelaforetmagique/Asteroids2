@@ -23,13 +23,21 @@ class PolygonOnTorus {
     }
   }
 
+  closeSymY() {
+    this.polygonDefinition.closeSymY();
+  }
+
+  fact(k_) {
+    this.polygonDefinition.fact(k_);
+  }
+
   containsPoint(point) {
     let contained = false;
 
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         let pointCopy = point.copy();
-        pointCopy.sub(new Vector((i - 1) * this.viewBox.width, (j - 1) * this.viewBox.height))
+        pointCopy.sub(new Vector((i - 1) * this.viewBox.width, (j - 1) * this.viewBox.height));
         pointCopy.sub(this.position);
         pointCopy.rotate(-this.angle);
         if (this.polygonDefinition.containsPoint(pointCopy)) {
@@ -46,6 +54,7 @@ class PolygonOnTorus {
 
   containsPolygon(other, checkOther = true) {
     let contained = false;
+    // console.log("test", checkOther);
 
     // // draft approach
     // let dist = Number.MAX_SAFE_INTEGER;
@@ -61,6 +70,8 @@ class PolygonOnTorus {
 
     for (let point of other.polygonDefinition.points) {
       let pointCopy = point.copy();
+      // for (let i = 0; i < 1; i++) {
+      // let pointCopy = other.polygonDefinition.points[i].copy();
       pointCopy.rotate(other.angle);
       pointCopy.add(other.position);
 
@@ -129,10 +140,12 @@ class PolygonOnTorus {
           (this.position.x - (i - 1) * this.viewBox.width) + "," +
           (this.position.y - (j - 1) * this.viewBox.height) + ")";
         let polygon = document.createElementNS(SVGNS, 'polygon');
-        polygon.setAttribute('points', this.polygonDefinition.listPts());
+
         polygon.setAttribute("transform", translation + rotation);
         this.dom.appendChild(polygon);
+        polygon.setAttribute('points', this.polygonDefinition.listPts(false));
       }
     }
+    // this.dom.appendChild(this.polygonDefinition.domRepr());
   }
 }

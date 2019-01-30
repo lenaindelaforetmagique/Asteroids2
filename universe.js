@@ -197,7 +197,7 @@ class Universe {
     // }, false);
 
 
-    // MOUSE events
+    // // MOUSE events
     // this.container.addEventListener("mousedown", function(e) {
     //   e.preventDefault();
     //   // console.log(e);
@@ -205,12 +205,36 @@ class Universe {
     //     // ajoute point
     //     let point = new Vector(thiz.viewBox.realX(e.clientX), thiz.viewBox.realY(e.clientY));
     //     let dom = point.domRepr();
-    //     console.log(thiz.asteroids[0]);
-    //     if (thiz.asteroids[0].polygon.containsPoint(point)) {
+    //     if (thiz.spaceship.polygon.containsPoint(point)) {
     //       dom.setAttribute('fill', "red");
     //     }
     //     thiz.dom.appendChild(dom);
-    //     thiz.debugPoints.push(point);
+    //     // thiz.debugPoints.push(point);
+    //   } else {
+    //     //affiche polygone
+    //     let polyg = new Polygon(thiz.debugPoints);
+    //     thiz.dom.appendChild(polyg.domRepr());
+    //
+    //     thiz.debugPoints = [];
+    //
+    //   }
+    //
+    // }, false);
+    //
+    // this.container.addEventListener("mousemove", function(e) {
+    //   e.preventDefault();
+    //   // console.log(e);
+    //   if (e.button == 0) {
+    //     // ajoute point
+    //     let point = new Vector(thiz.viewBox.realX(e.clientX), thiz.viewBox.realY(e.clientY));
+    //     let dom = point.domRepr();
+    //     console.log(thiz.asteroids[0]);
+    //     if (thiz.spaceship.polygon.containsPoint(point)) {
+    //       // if (thiz.asteroids[0].polygon.containsPoint(point)) {
+    //       dom.setAttribute('fill', "red");
+    //     }
+    //     thiz.dom.appendChild(dom);
+    //     // thiz.debugPoints.push(point);
     //   } else {
     //     //affiche polygone
     //     let polyg = new Polygon(thiz.debugPoints);

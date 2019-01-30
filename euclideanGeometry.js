@@ -71,9 +71,9 @@ class Vector {
   domRepr() {
     let result = document.createElementNS(SVGNS, 'ellipse');
     result.setAttribute('fill', "blue");
-    result.setAttribute('stroke', "white");
-    result.setAttribute('rx', 5);
-    result.setAttribute('ry', 5);
+    // result.setAttribute('stroke', "white");
+    result.setAttribute('rx', 2);
+    result.setAttribute('ry', 2);
     result.setAttribute('cx', this.x);
     result.setAttribute('cy', this.y);
     return result;
@@ -154,6 +154,23 @@ class Polygon {
     this.calculateRadius();
   }
 
+  closeSymY() {
+    for (let i = this.points.length - 1; i >= 0; i--) {
+      let newPoint = this.points[i].copy();
+      if (newPoint.x > 0) {
+        newPoint.x *= -1;
+        this.addPoint(newPoint);
+      }
+    }
+  }
+
+  fact(k_) {
+    for (let i = 0; i < this.points.length; i++) {
+      this.points[i].mult(k_);
+    }
+    this.calculateRadius();
+  }
+
   calculateRadius() {
     this.radius = 0;
     for (let point of this.points) {
@@ -229,7 +246,7 @@ class Polygon {
   listPts() {
     let res = "";
     for (let point of this.points) {
-      res += point.x + ',' + point.y + ' ';
+      res += (point.x) + ',' + (point.y) + ' ';
     }
     return res;
   }
