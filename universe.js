@@ -14,6 +14,16 @@ class Universe {
     this.container.appendChild(this.dom);
     this.viewBox = new ViewBox(this.dom);
     this.textBlock = new TextBlock();
+
+    // // for debug
+    // // let pA = new Vector(30, 30);
+    // // let pB = new Vector(130, 80);
+    // // let pC = new Vector(80, 130);
+    //
+    // this.debugPoints = [];
+    // // this.debugTriangle = new Triangle(pA, pB, pC);
+    // // this.dom.appendChild(this.debugTriangle.domRepr());
+
     this.addEvents();
     this.lastUpdate = Date.now();
 
@@ -187,17 +197,30 @@ class Universe {
     // }, false);
 
 
-
     // MOUSE events
-    // this.container.addEventListener("wheel", function(e) {
+    // this.container.addEventListener("mousedown", function(e) {
     //   e.preventDefault();
-    //   let k = 1.1;
-    //   if (e.deltaY > 0) {
-    //     k = 1 / k;
+    //   // console.log(e);
+    //   if (e.button == 0) {
+    //     // ajoute point
+    //     let point = new Vector(thiz.viewBox.realX(e.clientX), thiz.viewBox.realY(e.clientY));
+    //     let dom = point.domRepr();
+    //     console.log(thiz.asteroids[0]);
+    //     if (thiz.asteroids[0].polygon.containsPoint(point)) {
+    //       dom.setAttribute('fill', "red");
+    //     }
+    //     thiz.dom.appendChild(dom);
+    //     thiz.debugPoints.push(point);
+    //   } else {
+    //     //affiche polygone
+    //     let polyg = new Polygon(thiz.debugPoints);
+    //     thiz.dom.appendChild(polyg.domRepr());
+    //
+    //     thiz.debugPoints = [];
+    //
     //   }
-    //   thiz.viewBox.scale(e.clientX, e.clientY, k);
+    //
     // }, false);
-
 
     // TOUCH events
     // this.container.addEventListener("touchstart", function(e) {
@@ -321,7 +344,7 @@ class Universe {
           this.rockets.splice(i, 1);
 
           i--;
-          j += this.asteroids.length;
+          j += this.asteroids.length; // break ?
         } else {
           // console.log("miss");
           j++;
@@ -334,7 +357,7 @@ class Universe {
     let touched = false;
     i = 0
     while (!touched && i < this.asteroids.length) {
-      touched = this.spaceship.touched(this.asteroids[i]);
+      touched = this.spaceship.intersectsAsteroid(this.asteroids[i]);
       i++
     }
     if (touched) {

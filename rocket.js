@@ -1,8 +1,8 @@
 class Rocket {
   constructor(position_, velocity_) {
     this.creation = Date.now();
-    this.position = position_;
-    this.velocity = velocity_;
+    this.position = position_.copy();
+    this.velocity = velocity_.copy();
     this.acceleration = new Vector(0, 0);
 
     this.size = 5;
@@ -10,12 +10,8 @@ class Rocket {
     this.color = colorGenerator(255, 0, 0, 0.5);
     this.dom = document.createElementNS(SVGNS, 'ellipse');
     this.dom.setAttribute("class", "rocket");
-    // this.dom.setAttribute('fill', this.color);
-    // this.dom.setAttribute('stroke', colorGenerator(50, 50, 50, 1));
-
     this.dom.setAttribute('rx', this.size / 2);
     this.dom.setAttribute('ry', this.size / 2);
-
   }
 
   update() {
@@ -32,12 +28,6 @@ class Rocket {
   stillAlive(viewBox) {
     let age = Date.now() - this.creation;
     return age < 2000;
-    // return (
-    //   (this.position.x + this.size < viewBox.xMin) ||
-    //   (this.position.x - this.size > viewBox.xMin + viewBox.width) ||
-    //   (this.position.y + this.size < viewBox.yMin) ||
-    //   (this.position.y - this.size > viewBox.yMin + viewBox.height)
-    // );
   }
 
 }

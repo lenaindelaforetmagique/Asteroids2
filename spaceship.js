@@ -16,26 +16,27 @@ class Spaceship {
 
     this.size = 30;
 
-    this.polygon = new Polygon(this.parent);
-    this.polygon.addPoint(new Vector(0, this.size));
-    this.polygon.addPoint(new Vector(-this.size / 2, -this.size / 2));
-    this.polygon.addPoint(new Vector(this.size / 2, -this.size / 2));
+    this.polygon = new PolygonOnTorus(this.parent);
+    this.polygon.addPoint(new Vector(0, -this.size));
+    this.polygon.addPoint(new Vector(this.size / 2, this.size / 2));
+    this.polygon.addPoint(new Vector(-this.size / 2, this.size / 2));
 
     this.dom = this.polygon.dom;
     this.dom.setAttribute('class', 'ship');
   }
 
-  touched(asteroid) {
-    let dist = this.position.copy();
-    dist.sub(asteroid.position);
-    dist = dist.norm();
-    if (dist < this.size / 2 + asteroid.size / 2) {
-      // this.color = colorGenerator(Math.random() * 255, Math.random() * 255, Math.random() * 255, 0.5);
-      // this.dom.setAttribute('fill', this.color);
-      return true;
-    } else {
-      return false;
-    }
+  intersectsAsteroid(asteroid) {
+    return this.polygon.containsPolygon(asteroid.polygon);
+    // let dist = this.position.copy();
+    // dist.sub(asteroid.position);
+    // dist = dist.norm();
+    // if (dist < this.size / 2 + asteroid.size / 2) {
+    //   // this.color = colorGenerator(Math.random() * 255, Math.random() * 255, Math.random() * 255, 0.5);
+    //   // this.dom.setAttribute('fill', this.color);
+    //   return true;
+    // } else {
+    //   return false;
+    // }
   }
 
   shoot() {
@@ -43,13 +44,17 @@ class Spaceship {
 
     let nb = Math.trunc((this.parent.levelCount) / 4) + 1;
     let dalpha = Math.PI / 6 / nb;
+    let rocketPosition = new Vector(0, -this.size);
+    rocketPosition.rotate(this.theta);
+    rocketPosition.add(this.position);
     for (let i = 0; i < nb; i++) {
       let alpha = this.theta + (nb - 1 - 2 * i) * dalpha / 2;
-      // console.log(nb, alpha, this.theta);
+      // console.log(this.theta, alpha);
       let rocketVelocity = new Vector(Math.sin(alpha), -Math.cos(alpha));
       rocketVelocity.mult(7);
-      rocketVelocity.add(this.velocity);
-      newRockets.push(new Rocket(this.polygon.points[0].copy(), rocketVelocity));
+      console.log(rocketVelocity.norm());
+      // rocketVelocity.add(this.velocity);
+      newRockets.push(new Rocket(rocketPosition, rocketVelocity));
     }
 
     for (let rocket of newRockets) {
@@ -89,20 +94,16 @@ class Spaceship {
 
     this.theta += this.dtheta;
     this.velocity.add(this.acceleration);
-    // console.log(this.velocity.norm());
     this.velocity.limitNorm(20);
     this.position.add(this.velocity);
     this.acceleration.mult(0);
     this.velocity.mult(0.99);
     this.dtheta *= 0.9;
+
+    this.polygon.update(this.position, this.theta);
   }
 
   show() {
-    // console.log("lkjlk");
-    // console.log(this.size);
-
-
-    this.polygon.show(this.position, this.theta);
-
+    this.polygon.show();
   }
 }

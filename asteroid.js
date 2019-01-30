@@ -4,7 +4,8 @@ class Asteroid {
     this.position = new Vector(x_, y_);
     let theta = Math.random() * Math.PI * 2;
     this.velocity = new Vector(Math.cos(theta), Math.sin(theta));
-    this.velocity.mult(0 * Math.random(3) + 2);
+    this.velocity.mult(Math.random() * 2 + 1);
+
     this.acceleration = new Vector(0, 0);
     this.theta = 0;
     this.dtheta = 0; // 0.5 / Math.PI;
@@ -14,7 +15,7 @@ class Asteroid {
     // this.maxForce = 1;
     // this.maxSpeed = 4;
 
-    this.polygon = new Polygon(this.parent);
+    this.polygon = new PolygonOnTorus(this.parent);
     this.polygon.addPoint(new Vector(-this.size / 2, -this.size / 2));
     this.polygon.addPoint(new Vector(this.size / 2, -this.size / 2));
     this.polygon.addPoint(new Vector(this.size / 2, this.size / 2));
@@ -28,6 +29,7 @@ class Asteroid {
     this.velocity.add(this.acceleration);
     this.position.add(this.velocity);
     this.acceleration.mult(0);
+    this.polygon.update(this.position, this.theta);
   }
 
   touchPoint(point) {
@@ -39,16 +41,7 @@ class Asteroid {
   }
 
   checkRocket(rocket) {
-    let test = ((this.position.x + this.size / 2 > rocket.position.x - rocket.size / 2) &&
-      (this.position.x - this.size / 2 < rocket.position.x + rocket.size / 2) &&
-      (this.position.y + this.size / 2 > rocket.position.y - rocket.size / 2) &&
-      (this.position.y - this.size / 2 < rocket.position.y + rocket.size / 2));
-    // test = ((this.position.x > rocket.position.x) &&
-    //   (this.position.x < rocket.position.x) &&
-    //   (this.position.y > rocket.position.y) &&
-    //   (this.position.y < rocket.position.y));
-
-    return test;
+    return this.polygon.containsPoint(rocket.position);
   }
 
 
@@ -79,8 +72,6 @@ class Asteroid {
   }
 
   show() {
-    this.polygon.show(this.position, this.theta);
-
-
+    this.polygon.show();
   }
 }
