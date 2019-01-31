@@ -27,7 +27,7 @@ class Rocket {
 
   stillAlive(viewBox) {
     let age = Date.now() - this.creation;
-    return age < 1000;
+    return age < 1500;
   }
 
 }

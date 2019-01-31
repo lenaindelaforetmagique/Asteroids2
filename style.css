@@ -81,5 +81,5 @@ g.asteroid {
 }
 
 svg ellipse.rocket {
-  fill: rgba(255, 255, 255, 0.8);
+  fill: rgba(255, 255, 255, 0.9);
 }

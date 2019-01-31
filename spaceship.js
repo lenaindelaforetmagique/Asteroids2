@@ -50,6 +50,15 @@ class Spaceship {
 
     this.dom = this.polygon.dom;
     this.dom.setAttribute('class', 'ship');
+
+
+    this.shootStarts = [
+      [new Vector(0, -30), 1],
+      [new Vector(20.5, -10), 1, new Vector(-20.5, -10), 1],
+      [new Vector(0, -30), 1, new Vector(20.5, -10), 1, new Vector(-20.5, -10), 1],
+      [new Vector(0, -30), 1, new Vector(20.5, -10), 1, new Vector(-20.5, -10), 1, new Vector(20.5, 7.5), -1, new Vector(-20.5, 7.5), -1]
+    ];
+
   }
 
   intersectsAsteroid(asteroid) {
@@ -69,19 +78,32 @@ class Spaceship {
   shoot() {
     let newRockets = [];
 
-    let nb = Math.trunc((this.parent.levelCount) / 4) + 1;
-    let dalpha = Math.PI / 6 / nb;
-    let rocketPosition = new Vector(0, -30); //-this.size);
-    rocketPosition.rotate(this.theta);
-    rocketPosition.add(this.position);
-    for (let i = 0; i < nb; i++) {
-      let alpha = this.theta + (nb - 1 - 2 * i) * dalpha / 2;
-      // console.log(this.theta, alpha);
+    let levelShoot = Math.min(this.shootStarts.length - 1, Math.trunc((this.parent.levelCount) / 4));
+
+    for (let i = 0; i < this.shootStarts[levelShoot].length; i += 2) {
+      let rocketPosition = this.shootStarts[levelShoot][i].copy();
+      rocketPosition.rotate(this.theta);
+      rocketPosition.add(this.position);
+      let alpha = this.theta;
       let rocketVelocity = new Vector(Math.sin(alpha), -Math.cos(alpha));
+      rocketVelocity.mult(this.shootStarts[levelShoot][i + 1]);
       rocketVelocity.mult(10);
-      rocketVelocity.add(this.velocity);
       newRockets.push(new Rocket(rocketPosition, rocketVelocity));
     }
+
+
+    // // let dalpha = Math.PI / 6 / nb;
+    // let rocketPosition = new Vector(0, -30); //-this.size);
+    // rocketPosition.rotate(this.theta);
+    // rocketPosition.add(this.position);
+    // for (let i = 0; i < nb; i++) {
+    //   let alpha = this.theta + (nb - 1 - 2 * i) * dalpha / 2;
+    //   // console.log(this.theta, alpha);
+    //   let rocketVelocity = new Vector(Math.sin(alpha), -Math.cos(alpha));
+    //   rocketVelocity.mult(10);
+    //   rocketVelocity.add(this.velocity);
+    //   newRockets.push(new Rocket(rocketPosition, rocketVelocity));
+    // }
 
     for (let rocket of newRockets) {
       this.parent.addRocket(rocket);
