@@ -122,6 +122,20 @@ class Triangle {
     }
   }
 
+  area() {
+
+    return -1 * this.vectAB.crossProduct(this.vectCA) / 2;
+  }
+
+  centerOfGravity() {
+    let center = new Vector();
+    center.add(this.pointA);
+    center.add(this.pointB);
+    center.add(this.pointC);
+    center.div(3);
+    return center;
+  }
+
   listPts() {
     let res = "";
     res += this.pointA.x + ',' + this.pointA.y + ' ';
@@ -262,4 +276,132 @@ class Polygon {
     }
     return dom;
   }
+
+
+  centerOfGravity() {
+    if (this.triangles.length == 0) {
+      this.triangulate();
+    }
+
+    let center = new Vector();
+    let totalArea = 0;
+    for (let triangle of this.triangles) {
+      let area = triangle.area();
+      let curCenter = triangle.centerOfGravity();
+      curCenter.mult(area);
+      center.add(curCenter);
+      totalArea += area;
+    }
+    center.div(totalArea);
+    return center;
+  }
+
+  center() {
+
+    let res = new Vector();
+    for (let point of this.points) {
+      res.add(point);
+    }
+    res.div(this.points.length);
+    // console.log("//", res);
+    return res;
+  }
+
+  reCenter() {
+    let centerPos = this.centerOfGravity();
+    for (let i = 0; i < this.points.length; i++) {
+      this.points[i].sub(centerPos);
+    }
+    return centerPos;
+  }
+
+  cutInPieces(quantity_) {
+    let result = [];
+
+    quantity_ = Math.min(quantity_, this.points.length);
+
+    let centerPos = this.centerOfGravity();
+
+    let nbPoints = Math.ceil(this.points.length / quantity_) + 1;
+
+    let j = 0;
+    for (let i = 0; i < quantity_; i++) {
+      let newPoly = new Polygon();
+      newPoly.addPoint(centerPos.copy());
+      let k = 0;
+      while (k < nbPoints && j < this.points.length) {
+        newPoly.addPoint(this.points[j].copy());
+        j++;
+        k++;
+      }
+      j--;
+      result.push(newPoly);
+    }
+    result[quantity_ - 1].addPoint(this.points[0]);
+
+    for (let j = 0; j < result.length; j++) {
+      result[j].refine();
+    }
+
+    return result;
+  }
+
+  segmentLength(i_) {
+    if (i_ < 0 || i_ >= this.points.length) {
+      i_ = 0;
+    }
+    let pointA = this.points[i_].copy();
+    let pointB;
+    if (i_ == this.points.length - 1) {
+      pointB = this.points[0].copy();
+    } else {
+      pointB = this.points[i_ + 1].copy();
+    }
+    pointA.sub(pointB);
+    return pointA.norm();
+  }
+
+  insertMidPoint(i_) {
+    if (i_ < 0 || i_ >= this.points.length) {
+      i_ = 0;
+    }
+    let pointA = this.points[i_].copy();
+    let pointB;
+    if (i_ == this.points.length - 1) {
+      pointB = this.points[0].copy();
+    } else {
+      pointB = this.points[i_ + 1].copy();
+    }
+
+    let vectAB = pointB.copy();
+    vectAB.sub(pointA);
+    // let a=vectAB.norm();
+    vectAB = new Vector(vectAB.y, -vectAB.x);
+    vectAB.mult(0.015);
+
+    pointA.add(pointB);
+    pointA.div(2);
+    pointA.add(vectAB);
+
+    this.points.splice(i_ + 1, 0, pointA);
+  }
+
+  refine() {
+    let minLength = Number.MAX_SAFE_INTEGER;
+
+    for (let i = 0; i < this.points.length; i++) {
+      minLength = Math.min(minLength, this.segmentLength(i));
+    }
+    let maxLength = minLength * 1.5;
+
+    let i = 0;
+    while (i < this.points.length) {
+      if (this.segmentLength(i) > maxLength) {
+        this.insertMidPoint(i);
+      } else {
+        i++;
+      }
+    }
+  }
+
 }
