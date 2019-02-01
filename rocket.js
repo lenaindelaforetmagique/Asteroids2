@@ -5,7 +5,7 @@ class Rocket {
     this.velocity = velocity_.copy();
     this.acceleration = new Vector(0, 0);
 
-    this.size = 5;
+    this.size = 4;
 
     this.color = colorGenerator(255, 0, 0, 0.5);
     this.dom = document.createElementNS(SVGNS, 'ellipse');

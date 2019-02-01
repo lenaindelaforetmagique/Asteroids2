@@ -52,11 +52,12 @@ class Spaceship {
     this.dom.setAttribute('class', 'ship');
 
 
+    let angle = Math.PI / 80;
     this.shootStarts = [
-      [new Vector(0, -30), 1],
-      [new Vector(20.5, -10), 1, new Vector(-20.5, -10), 1],
-      [new Vector(0, -30), 1, new Vector(20.5, -10), 1, new Vector(-20.5, -10), 1],
-      [new Vector(0, -30), 1, new Vector(20.5, -10), 1, new Vector(-20.5, -10), 1, new Vector(20.5, 7.5), -1, new Vector(-20.5, 7.5), -1]
+      [new Vector(0, -30), 0],
+      [new Vector(0, -30), 0, new Vector(0, -33), 0],
+      [new Vector(20.5, -10), -angle, new Vector(-20.5, -10), angle, new Vector(20.5, -13), -angle, new Vector(-20.5, -13), angle],
+      [new Vector(0, -30), 0, new Vector(0, -33), 0, new Vector(20.5, -10), -angle, new Vector(-20.5, -10), angle, new Vector(20.5, -13), -angle, new Vector(-20.5, -13), angle]
     ];
 
   }
@@ -79,15 +80,15 @@ class Spaceship {
     let newRockets = [];
 
     let levelShoot = Math.min(this.shootStarts.length - 1, Math.trunc((this.parent.levelCount) / 4));
-
     for (let i = 0; i < this.shootStarts[levelShoot].length; i += 2) {
       let rocketPosition = this.shootStarts[levelShoot][i].copy();
       rocketPosition.rotate(this.theta);
       rocketPosition.add(this.position);
       let alpha = this.theta;
       let rocketVelocity = new Vector(Math.sin(alpha), -Math.cos(alpha));
-      rocketVelocity.mult(this.shootStarts[levelShoot][i + 1]);
+      rocketVelocity.rotate(this.shootStarts[levelShoot][i + 1]);
       rocketVelocity.mult(10);
+      rocketVelocity.add(this.velocity);
       newRockets.push(new Rocket(rocketPosition, rocketVelocity));
     }
 
