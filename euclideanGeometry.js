@@ -86,6 +86,21 @@ distance = function(vect1, vect2) {
   return res.norm();
 }
 
+angle = function(vect1, vect2) {
+  // returns the angle between vect1 and vect2
+  let v1 = vect1.copy();
+  let v2 = vect2.copy();
+  v1.normalize();
+  v2.normalize();
+  let sin = v1.crossProduct(v2);
+  let cos = v1.dotProduct(v2);
+  let theta = Math.acos(cos);
+  if (sin < 0) {
+    theta *= -1;
+  }
+  return theta;
+}
+
 
 //-----------------------------------------------------------------------------
 class Triangle {
@@ -146,7 +161,7 @@ class Triangle {
   domRepr() {
     let result = document.createElementNS(SVGNS, 'polygon');
     result.setAttribute('points', this.listPts());
-    result.setAttribute('fill', "rgba(255,255,255,0.5)");
+    result.setAttribute('fill', colorGenerator(255 * Math.random(), 255 * Math.random(), 255 * Math.random(), 1));
     result.setAttribute('stroke', "white");
     return result;
   }
@@ -191,10 +206,6 @@ class Triangle {
         result = result.concat(newTriangle2.refine(maxLength));
       }
     }
-    if (result.length == 0) {
-      console.log("ahha");
-    }
-    console.log("**", result.length);
     return result;
   }
 }
@@ -238,7 +249,7 @@ class Polygon {
     }
   }
 
-  triangulate() {
+  triangulate_old() {
     let indices = [];
     for (let i = 0; i < this.points.length; i++) {
       indices.push(i);
@@ -260,6 +271,78 @@ class Polygon {
       indices.splice(i + 1, 1);
     }
   }
+
+  triangulate() {
+    this.refine();
+
+    let indices = [];
+    for (let i = 0; i < this.points.length; i++) {
+      indices.push(i);
+    }
+    let security = 0;
+    while (indices.length > 2 && security < 100) {
+      // console.log("lalla");
+      let triangles = [];
+      triangles.push([indices[indices.length - 1], indices[0], indices[1]]);
+      for (let i = 0; i < indices.length - 2; i++) {
+        triangles.push([indices[i], indices[i + 1], indices[i + 2]]);
+      }
+      triangles.push([indices[indices.length - 2], indices[indices.length - 1], indices[0]]);
+
+
+      // for (let triangle of triangles) {
+      //   console.log("**", triangle, this.angle(triangle[0], triangle[1], triangle[2]));
+      // }
+
+      let thiz = this;
+      // console.log(">>", triangles);
+      triangles.sort(function(a, b) {
+        let v1 = thiz.angle(a[0], a[1], a[2]);
+        let v2 = thiz.angle(b[0], b[1], b[2]);
+        return v1 < v2;
+      });
+
+      // console.log(triangles);
+
+
+      let found = false;
+      let i = -1;
+      while (!found && i < triangles.length) {
+        i++;
+        found = this.checkTriangle(triangles[i][0], triangles[i][1], triangles[i][2]);
+      }
+
+      // add found triangle
+      this.triangles.push(new Triangle(
+        this.points[triangles[i][0]],
+        this.points[triangles[i][1]],
+        this.points[triangles[i][2]]
+      ));
+
+      let pos = 0;
+      while (pos < indices.length && indices[pos] != triangles[i][1]) {
+        pos += 1;
+      }
+      // let pos = indices.find(function(element) {
+      //   return element == triangles[i][1];
+      // });
+      indices.splice(pos, 1);
+      security += 1;
+    }
+
+    // console.log("Angle", i_, j_, k_, this.angle(i_, j_, k_));
+  }
+
+  angle(i_, j_, k_) {
+    // return the angle formed by vectors IJ and JK
+    // console.log(i_, j_, k_);
+    let vect_ij = this.points[j_].copy();
+    vect_ij.sub(this.points[i_]);
+    let vect_jk = this.points[k_].copy();
+    vect_jk.sub(this.points[j_]);
+    return angle(vect_ij, vect_jk) * 180 / Math.PI;
+  }
+
 
   checkTriangle(i_, j_, k_) {
     // returns true if triangle is "clockwise" and contains no point
@@ -387,6 +470,7 @@ class Polygon {
 
     // for (let j = 0; j < result.length; j++) {
     //   result[j].refine();
+    //   result[j].triangulate();
     // }
 
     return result;
@@ -419,19 +503,19 @@ class Polygon {
       pointB = this.points[i_ + 1].copy();
     }
 
-    let vectAB = pointB.copy();
-    vectAB.sub(pointA);
-    // let a=vectAB.norm();
-    vectAB = new Vector(vectAB.y, -vectAB.x);
-    vectAB.mult(0.025 * 1);
-    if (vectAB.x > 0) {
-      vectAB.mult(-1);
-    }
+    // let vectAB = pointB.copy();
+    // vectAB.sub(pointA);
+    // // let a=vectAB.norm();
+    // vectAB = new Vector(vectAB.y, -vectAB.x);
+    // vectAB.mult(0.025 * 1);
+    // if (vectAB.x > 0) {
+    //   vectAB.mult(-1);
+    // }
 
 
     pointA.add(pointB);
     pointA.div(2);
-    pointA.add(vectAB);
+    // pointA.add(vectAB);
 
     this.points.splice(i_ + 1, 0, pointA);
   }
@@ -442,7 +526,8 @@ class Polygon {
     for (let i = 0; i < this.points.length; i++) {
       minLength = Math.min(minLength, this.segmentLength(i));
     }
-    let maxLength = minLength * 1;
+    let maxLength = minLength * 5;
+    // Math.min(40, minLength * 3);
 
     let i = 0;
     while (i < this.points.length) {
@@ -452,25 +537,21 @@ class Polygon {
         i++;
       }
     }
-    this.triangulate();
   }
 
   refine2() {
-    console.log("start", this.triangles.length);
     let minLength = Number.MAX_SAFE_INTEGER;
 
     for (let i = 0; i < this.points.length; i++) {
       minLength = Math.min(minLength, this.segmentLength(i));
     }
-    let maxLength = Math.min(50, minLength * 3);
+    let maxLength = minLength * 2;
 
     let newTriangles = [];
     for (let triangle of this.triangles) {
-      console.log("pasage");
       newTriangles = newTriangles.concat(triangle.refine(maxLength));
     }
     this.triangles = newTriangles;
-    console.log("final", this.triangles.length);
   }
 
 }

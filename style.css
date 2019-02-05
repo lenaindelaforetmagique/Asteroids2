@@ -21,6 +21,10 @@ html, body {
   border-color: #CCCCCC;
 }
 
+header {
+  color: white;
+}
+
 footer {
   position: absolute;
   top: 95%;
