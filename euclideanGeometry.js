@@ -123,7 +123,6 @@ class Triangle {
   }
 
   area() {
-
     return -1 * this.vectAB.crossProduct(this.vectCA) / 2;
   }
 
@@ -149,6 +148,53 @@ class Triangle {
     result.setAttribute('points', this.listPts());
     result.setAttribute('fill', "rgba(255,255,255,0.5)");
     result.setAttribute('stroke', "white");
+    return result;
+  }
+
+  refine(maxLength) {
+    let result = [];
+    let length = [this.vectAB.norm(), this.vectBC.norm(), this.vectCA.norm()];
+    let longest = Math.max(...length);
+    // console.log(length, longest);
+
+    if (longest < maxLength) {
+      // console.log('1');
+      result.push(this);
+    } else {
+      if (this.vectAB.norm() == longest) {
+        // console.log('2');
+        let newPoint = this.pointA.copy();
+        newPoint.add(this.pointB);
+        newPoint.div(2);
+        let newTriangle1 = new Triangle(this.pointA, newPoint, this.pointC);
+        let newTriangle2 = new Triangle(newPoint, this.pointB, this.pointC);
+        result = result.concat(newTriangle1.refine(maxLength));
+        result = result.concat(newTriangle2.refine(maxLength));
+
+      } else if (this.vectBC.norm() == longest) {
+        // console.log('3');
+        let newPoint = this.pointB.copy();
+        newPoint.add(this.pointC);
+        newPoint.div(2);
+        let newTriangle1 = new Triangle(this.pointA, this.pointB, newPoint);
+        let newTriangle2 = new Triangle(this.pointA, newPoint, this.pointC);
+        result = result.concat(newTriangle1.refine(maxLength));
+        result = result.concat(newTriangle2.refine(maxLength));
+      } else {
+        // console.log('4');
+        let newPoint = this.pointC.copy();
+        newPoint.add(this.pointA);
+        newPoint.div(2);
+        let newTriangle1 = new Triangle(this.pointA, this.pointB, newPoint);
+        let newTriangle2 = new Triangle(newPoint, this.pointB, this.pointC);
+        result = result.concat(newTriangle1.refine(maxLength));
+        result = result.concat(newTriangle2.refine(maxLength));
+      }
+    }
+    if (result.length == 0) {
+      console.log("ahha");
+    }
+    console.log("**", result.length);
     return result;
   }
 }
@@ -339,9 +385,9 @@ class Polygon {
     }
     result[quantity_ - 1].addPoint(this.points[0]);
 
-    for (let j = 0; j < result.length; j++) {
-      result[j].refine();
-    }
+    // for (let j = 0; j < result.length; j++) {
+    //   result[j].refine();
+    // }
 
     return result;
   }
@@ -377,7 +423,11 @@ class Polygon {
     vectAB.sub(pointA);
     // let a=vectAB.norm();
     vectAB = new Vector(vectAB.y, -vectAB.x);
-    vectAB.mult(0.015);
+    vectAB.mult(0.025 * 1);
+    if (vectAB.x > 0) {
+      vectAB.mult(-1);
+    }
+
 
     pointA.add(pointB);
     pointA.div(2);
@@ -392,7 +442,7 @@ class Polygon {
     for (let i = 0; i < this.points.length; i++) {
       minLength = Math.min(minLength, this.segmentLength(i));
     }
-    let maxLength = minLength * 1.5;
+    let maxLength = minLength * 1;
 
     let i = 0;
     while (i < this.points.length) {
@@ -402,6 +452,25 @@ class Polygon {
         i++;
       }
     }
+    this.triangulate();
+  }
+
+  refine2() {
+    console.log("start", this.triangles.length);
+    let minLength = Number.MAX_SAFE_INTEGER;
+
+    for (let i = 0; i < this.points.length; i++) {
+      minLength = Math.min(minLength, this.segmentLength(i));
+    }
+    let maxLength = Math.min(50, minLength * 3);
+
+    let newTriangles = [];
+    for (let triangle of this.triangles) {
+      console.log("pasage");
+      newTriangles = newTriangles.concat(triangle.refine(maxLength));
+    }
+    this.triangles = newTriangles;
+    console.log("final", this.triangles.length);
   }
 
 }

@@ -8,6 +8,7 @@ class Universe {
     this.spaceship = null;
     this.asteroids = [];
     this.rockets = [];
+    this.grenades = [];
 
     this.container = document.getElementById("container");
     this.dom = document.createElementNS(SVGNS, "svg");
@@ -94,6 +95,11 @@ class Universe {
     this.rockets.push(rocket);
   }
 
+  addGrenade(grenade) {
+    this.dom.appendChild(grenade.dom);
+    this.grenades.push(grenade);
+  }
+
   createAsteroid(x_, y_) {
     this.addAsteroid(new Asteroid(x_, y_, this));
   }
@@ -131,10 +137,14 @@ class Universe {
           thiz.resetGame();
           break;
         case 'S':
-          e.preventDefault();
           if (thiz.shootOff) {
             thiz.spaceship.shootOn = true;
-            // createRocket();
+            thiz.shootOff = false;
+          }
+          break;
+        case 'G':
+          if (thiz.shootOff) {
+            thiz.spaceship.grenadeOn = true;
             thiz.shootOff = false;
           }
           break;
@@ -157,8 +167,12 @@ class Universe {
     }
     document.onkeyup = function(e) {
       switch (e.key.toUpperCase()) {
+        case 'G':
+          thiz.spaceship.grenadeOn = false;
+          thiz.shootOff = true;
+          break;
         case 'S':
-          thiz.spaceship.shoonOn = false;
+          thiz.spaceship.shootOn = false;
           thiz.shootOff = true;
           break;
         case "ARROWLEFT":
@@ -173,7 +187,6 @@ class Universe {
         case "ARROWDOWN":
           thiz.spaceship.brakeOn = false;
           break;
-
         default:
           break;
       }
@@ -325,8 +338,22 @@ class Universe {
     this.spaceship.update();
     this.controlEdges(this.spaceship);
 
-    // rockets OoB ?
+    // grenades
     let i = 0;
+    while (i < this.grenades.length) {
+      let grenade = this.grenades[i];
+      grenade.update();
+      if (grenade.stillAlive(this.viewBox)) {
+        this.controlEdges(grenade);
+        i++;
+      } else {
+        this.dom.removeChild(grenade.dom);
+        this.grenades.splice(i, 1);
+      }
+    }
+
+    // rockets OoB ?
+    i = 0;
     while (i < this.rockets.length) {
       let rocket = this.rockets[i];
       rocket.update();
@@ -398,6 +425,10 @@ class Universe {
 
   show() {
     this.spaceship.show();
+
+    for (let grenade of this.grenades) {
+      grenade.show();
+    }
 
     for (let rocket of this.rockets) {
       rocket.show();

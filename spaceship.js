@@ -13,6 +13,7 @@ class Spaceship {
     this.turnL = false;
     this.turnR = false;
     this.shootOn = false;
+    this.grenadeOn = false;
 
     this.size = 20;
 
@@ -92,24 +93,25 @@ class Spaceship {
       newRockets.push(new Rocket(rocketPosition, rocketVelocity));
     }
 
-
-    // // let dalpha = Math.PI / 6 / nb;
-    // let rocketPosition = new Vector(0, -30); //-this.size);
-    // rocketPosition.rotate(this.theta);
-    // rocketPosition.add(this.position);
-    // for (let i = 0; i < nb; i++) {
-    //   let alpha = this.theta + (nb - 1 - 2 * i) * dalpha / 2;
-    //   // console.log(this.theta, alpha);
-    //   let rocketVelocity = new Vector(Math.sin(alpha), -Math.cos(alpha));
-    //   rocketVelocity.mult(10);
-    //   rocketVelocity.add(this.velocity);
-    //   newRockets.push(new Rocket(rocketPosition, rocketVelocity));
-    // }
-
     for (let rocket of newRockets) {
       this.parent.addRocket(rocket);
     }
     this.shootOn = false;
+  }
+
+  shoot_grenade() {
+    let grenadePos = this.shootStarts[0][0].copy();
+    grenadePos.rotate(this.theta);
+    grenadePos.add(this.position);
+
+    let alpha = this.theta;
+    let grenadeVel = new Vector(Math.sin(alpha), -Math.cos(alpha));
+    grenadeVel.mult(6);
+    grenadeVel.add(this.velocity);
+
+    let grenade = new Grenade(grenadePos, grenadeVel, this.parent, 800);
+    this.parent.addGrenade(grenade);
+    this.grenadeOn = false;
   }
 
   accelerate(fact) {
@@ -126,6 +128,10 @@ class Spaceship {
     if (this.shootOn) {
       this.shoot();
     }
+    if (this.grenadeOn) {
+      this.shoot_grenade();
+    }
+
     if (this.boostOn) {
       this.accelerate(1);
     }

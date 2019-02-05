@@ -85,7 +85,7 @@ class Asteroid {
 
         let newVel = this.velocity.copy()
         transl.normalize();
-        transl.mult(0.3);
+        transl.mult(0.3 * Math.random());
         newVel.add(transl);
         child.velocity = newVel;
 
