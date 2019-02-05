@@ -526,8 +526,7 @@ class Polygon {
     for (let i = 0; i < this.points.length; i++) {
       minLength = Math.min(minLength, this.segmentLength(i));
     }
-    let maxLength = minLength * 5;
-    // Math.min(40, minLength * 3);
+    let maxLength = Math.min(100, minLength * 3);
 
     let i = 0;
     while (i < this.points.length) {
