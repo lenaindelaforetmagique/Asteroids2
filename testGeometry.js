@@ -73,11 +73,14 @@ class Universe {
         case 'T':
           thiz.polygons.last().triangulate();
           break;
-        case 'I':
+        case 'A':
           thiz.polygons.last().improveTriangulation();
           break;
         case 'R':
           thiz.polygons.last().refine();
+          break;
+        case 'P':
+          thiz.polygons.last().refine(false);
           break;
         case 'M':
           thiz.polygons.last().mesh();

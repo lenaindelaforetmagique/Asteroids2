@@ -331,7 +331,7 @@ class Polygon {
     // this.triangulate();
   }
 
-  refine() {
+  refine(all = true) {
     let minLength = Number.MAX_SAFE_INTEGER;
     for (let i = 0; i < this.points.length; i++) {
       minLength = Math.min(minLength, this.segmentLength(i));
@@ -340,12 +340,20 @@ class Polygon {
 
     let i = 0;
     let maxValues = this.maxTriangleSize();
-    while (maxValues[2] > maxLength) {
-      this.reduceTriangleSize(this.triangles[maxValues[0]], maxValues[1]);
-      this.improveTriangulation();
-      // this.cleanTrianglesTable();
-      maxValues = this.maxTriangleSize();
+    if (all) {
+      while (maxValues[2] > maxLength) {
+        this.reduceTriangleSize(this.triangles[maxValues[0]], maxValues[1]);
+        this.improveTriangulation();
+        maxValues = this.maxTriangleSize();
+      }
+    } else {
+      if (maxValues[2] > maxLength) {
+        this.reduceTriangleSize(this.triangles[maxValues[0]], maxValues[1]);
+        this.improveTriangulation();
+        maxValues = this.maxTriangleSize();
+      }
     }
+
     this.updateDom();
   }
 
