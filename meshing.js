@@ -317,6 +317,7 @@ class Polygon {
     }
 
     //
+    this.improveTriangulation();
     this.updateDom();
   }
 
@@ -332,26 +333,25 @@ class Polygon {
   }
 
   refine(all = true) {
-    let minLength = Number.MAX_SAFE_INTEGER;
-    for (let i = 0; i < this.points.length; i++) {
-      minLength = Math.min(minLength, this.segmentLength(i));
-    }
-    let maxLength = minLength * 2;
+    // let minLength = Number.MAX_SAFE_INTEGER;
+    // for (let i = 0; i < this.points.length; i++) {
+    //   minLength = Math.min(minLength, this.segmentLength(i));
+    // }
 
-    let i = 0;
     let maxValues = this.maxTriangleSize();
+
+
     if (all) {
+      // let maxLength = minLength * 2;
+      let maxLength = maxValues[2] / 2;
       while (maxValues[2] > maxLength) {
         this.reduceTriangleSize(this.triangles[maxValues[0]], maxValues[1]);
         this.improveTriangulation();
         maxValues = this.maxTriangleSize();
       }
     } else {
-      if (maxValues[2] > maxLength) {
-        this.reduceTriangleSize(this.triangles[maxValues[0]], maxValues[1]);
-        this.improveTriangulation();
-        maxValues = this.maxTriangleSize();
-      }
+      this.reduceTriangleSize(this.triangles[maxValues[0]], maxValues[1]);
+      this.improveTriangulation();
     }
 
     this.updateDom();

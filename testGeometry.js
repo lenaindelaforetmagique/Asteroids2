@@ -66,15 +66,10 @@ class Universe {
       switch (e.key.toUpperCase()) {
         case "ENTER":
           thiz.addPolygon();
+          thiz.polygons.last().triangulate();
           break;
         case ' ':
           thiz.init();
-          break;
-        case 'T':
-          thiz.polygons.last().triangulate();
-          break;
-        case 'A':
-          thiz.polygons.last().improveTriangulation();
           break;
         case 'R':
           thiz.polygons.last().refine();
