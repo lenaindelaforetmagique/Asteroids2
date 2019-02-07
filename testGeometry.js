@@ -1,4 +1,11 @@
 var SVGNS = "http://www.w3.org/2000/svg";
+
+if (!Array.prototype.last) {
+  Array.prototype.last = function() {
+    return this[this.length - 1];
+  };
+};
+
 colorGenerator = function(r = 0, g = 0, b = 0, alpha = 1) {
   return `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)}, ${alpha})`;
 }
@@ -10,78 +17,81 @@ class Universe {
     this.container.appendChild(this.dom);
     this.viewBox = new ViewBox(this.dom);
 
-    this.domObjects = [];
-
     this.points = [];
-    this.polygon = null;
 
-
-    // // for debug
-    // // let pA = new Vector(30, 30);
-    // // let pB = new Vector(130, 80);
-    // // let pC = new Vector(80, 130);
-    //
-    // this.debugPoints = [];
-    // // this.debugTriangle = new Triangle(pA, pB, pC);
-    // // this.dom.appendChild(this.debugTriangle.domRepr());
+    this.nodes = [];
+    this.polygons = [];
 
     this.addEvents();
-    this.lastUpdate = Date.now();
   }
 
   init() {
     // clean everything
-    for (let domObject of this.domObjects) {
-      this.dom.removeChild(domObject);
+    while (this.dom.firstChild != null) {
+      this.dom.removeChild(this.dom.firstChild);
     }
 
-    this.domObjects = [];
+    this.nodes = [];
     this.points = [];
     this.polygon = null;
+  }
+
+  addPoint(x_ = 0, y_ = 0) {
+    let newPoint = new Point(x_, y_);
+    this.points.push(newPoint);
+    this.dom.appendChild(newPoint.dom);
+  }
+
+  addNode(x_ = 0, y_ = 0) {
+    let newNode = new Node(x_, y_);
+    this.nodes.push(newNode);
+    this.dom.appendChild(newNode.dom);
+  }
+
+  addPolygon() {
+    if (this.points.length > 0) {
+      let newPolygon = new Polygon(this.points);
+      this.polygons.push(newPolygon);
+      this.dom.appendChild(newPolygon.dom);
+      this.points = [];
+    }
   }
 
 
   addEvents() {
     let thiz = this;
-
     // KEYBOARD Events
     document.onkeydown = function(e) {
-      console.log(e.key);
+      // console.log(e.key);
       switch (e.key.toUpperCase()) {
         case "ENTER":
-          if (thiz.points.length > 0) {
-            // create polygon
-            thiz.polygon = new Polygon(thiz.points);
-            let dom = thiz.polygon.domRepr();
-            thiz.dom.appendChild(dom);
-            thiz.domObjects.push(dom);
-            thiz.points = [];
-          }
+          thiz.addPolygon();
           break;
         case ' ':
           thiz.init();
           break;
-          // case 'S':
+        case 'T':
+          thiz.polygons.last().triangulate();
+          break;
+        case 'I':
+          thiz.polygons.last().improveTriangulation();
+          break;
+        case 'R':
+          thiz.polygons.last().refine();
+          break;
+        case 'M':
+          thiz.polygons.last().mesh();
+          break;
+
+          // case 'R':
           //   // refine
           //   if (thiz.polygon != null) {
-          //     thiz.polygon.refine();
+          //     thiz.polygon.refine2();
           //     let dom = thiz.polygon.domRepr();
-          //     thiz.init();
+          //     // thiz.init();
           //     thiz.dom.appendChild(dom);
-          //     thiz.domObjects.push(dom);
           //   }
           //   break;
-
-        case 'R':
-          // refine
-          if (thiz.polygon != null) {
-            thiz.polygon.refine2();
-            let dom = thiz.polygon.domRepr();
-            // thiz.init();
-            thiz.dom.appendChild(dom);
-            thiz.domObjects.push(dom);
-          }
-          break;
         default:
           break;
       }
@@ -91,81 +101,14 @@ class Universe {
     // MOUSE events
     this.container.addEventListener("mousedown", function(e) {
       e.preventDefault();
-      // console.log(e);
-      if (e.button == 0) {
-        // ajoute point
-        let point = new Vector(thiz.viewBox.realX(e.clientX), thiz.viewBox.realY(e.clientY));
-        thiz.points.push(point);
-        let dom = point.domRepr();
-
-        thiz.dom.appendChild(dom);
-        thiz.domObjects.push(dom);
+      if (e.ctrlKey) {
+        thiz.addNode(thiz.viewBox.realX(e.clientX), thiz.viewBox.realY(e.clientY));
+      } else {
+        thiz.addPoint(thiz.viewBox.realX(e.clientX), thiz.viewBox.realY(e.clientY));
       }
-
     }, false);
-
-    // this.container.addEventListener("mousemove", function(e) {
-    //   e.preventDefault();
-    //   // console.log(e);
-    //   if (e.button == 0) {
-    //     // ajoute point
-    //     let point = new Vector(thiz.viewBox.realX(e.clientX), thiz.viewBox.realY(e.clientY));
-    //     let dom = point.domRepr();
-    //     console.log(thiz.asteroids[0]);
-    //     if (thiz.spaceship.polygon.containsPoint(point)) {
-    //       // if (thiz.asteroids[0].polygon.containsPoint(point)) {
-    //       dom.setAttribute('fill', "red");
-    //     }
-    //     thiz.dom.appendChild(dom);
-    //     // thiz.debugPoints.push(point);
-    //   } else {
-    //     //affiche polygone
-    //     let polyg = new Polygon(thiz.debugPoints);
-    //     thiz.dom.appendChild(polyg.domRepr());
-    //
-    //     thiz.debugPoints = [];
-    //
-    //   }
-    //
-    // }, false);
-
   }
 
-  update() {
-
-  }
-
-  show() {
-
-  }
-
-  refresh() {
-    let now = Date.now();
-    if (now - this.lastUpdate > 20) {
-      this.lastUpdate = now;
-      if (this.alive) {
-        this.update();
-        this.show();
-      }
-    }
-  }
-
-  controlEdges(obj) {
-    let tol = 0;
-    while (obj.position.x + tol < this.viewBox.xMin) {
-      obj.position.x += this.viewBox.width + 2 * tol;
-    }
-    while (obj.position.x - tol > this.viewBox.xMin + this.viewBox.width) {
-      obj.position.x -= this.viewBox.width + 2 * tol;
-    }
-
-    while (obj.position.y + tol < this.viewBox.yMin) {
-      obj.position.y += this.viewBox.height + 2 * tol;
-    }
-    while (obj.position.y - tol > this.viewBox.yMin + this.viewBox.height) {
-      obj.position.y -= this.viewBox.height + 2 * tol;
-    }
-  }
 }
 
 class ViewBox {
@@ -222,3 +165,5 @@ class ViewBox {
     this.set();
   }
 }
+
+let u_ = new Universe();

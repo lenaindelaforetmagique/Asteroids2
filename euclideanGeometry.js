@@ -1,108 +1,4 @@
 //-----------------------------------------------------------------------------
-class Vector {
-  constructor(x_ = 0, y_ = 0) {
-    this.x = x_;
-    this.y = y_;
-  }
-
-  copy() {
-    return new Vector(this.x, this.y);
-  }
-
-  norm() {
-    let res = Math.sqrt(this.x ** 2 + this.y ** 2);
-    return res;
-  }
-
-  normalize() {
-    let norm_ = this.norm();
-    if (norm_ > 0) {
-      this.x /= norm_;
-      this.y /= norm_;
-    }
-  }
-
-  add(other) {
-    this.x += other.x;
-    this.y += other.y;
-  }
-
-  sub(other) {
-    this.x -= other.x;
-    this.y -= other.y;
-  }
-
-  mult(scal) {
-    this.x *= scal;
-    this.y *= scal;
-  }
-
-  div(scal) {
-    this.x /= scal;
-    this.y /= scal;
-  }
-
-  limitNorm(maxNorm) {
-    let norm_ = this.norm();
-    if (norm_ > maxNorm) {
-      this.mult(maxNorm / norm_);
-    }
-  }
-
-  dotProduct(other) {
-    let res = 0;
-    res += this.x * other.x;
-    res += this.y * other.y;
-    return res;
-  }
-
-  crossProduct(other) {
-    // as vector are in the plane, only Z-component is returned
-    return this.x * other.y - this.y * other.x;
-  }
-
-  rotate(angle) {
-    let new_x = this.x * Math.cos(angle) - this.y * Math.sin(angle);
-    let new_y = this.x * Math.sin(angle) + this.y * Math.cos(angle);
-    this.x = new_x;
-    this.y = new_y;
-  }
-
-  domRepr() {
-    let result = document.createElementNS(SVGNS, 'ellipse');
-    result.setAttribute('fill', "blue");
-    // result.setAttribute('stroke', "white");
-    result.setAttribute('rx', 2);
-    result.setAttribute('ry', 2);
-    result.setAttribute('cx', this.x);
-    result.setAttribute('cy', this.y);
-    return result;
-  }
-}
-
-distance = function(vect1, vect2) {
-  let res = new Vector(vect1.x, vect1.y);
-  res.sub(vect2);
-  return res.norm();
-}
-
-angle = function(vect1, vect2) {
-  // returns the angle between vect1 and vect2
-  let v1 = vect1.copy();
-  let v2 = vect2.copy();
-  v1.normalize();
-  v2.normalize();
-  let sin = v1.crossProduct(v2);
-  let cos = v1.dotProduct(v2);
-  let theta = Math.acos(cos);
-  if (sin < 0) {
-    theta *= -1;
-  }
-  return theta;
-}
-
-
-//-----------------------------------------------------------------------------
 class Triangle {
   constructor(pointA_, pointB_, pointC_) {
     // clockwise ABC
@@ -526,7 +422,7 @@ class Polygon {
     for (let i = 0; i < this.points.length; i++) {
       minLength = Math.min(minLength, this.segmentLength(i));
     }
-    let maxLength = Math.min(100, minLength * 3);
+    let maxLength = minLength * 3;
 
     let i = 0;
     while (i < this.points.length) {

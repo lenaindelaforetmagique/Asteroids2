@@ -88,3 +88,28 @@ g.asteroid {
 svg ellipse.rocket {
   fill: rgba(255, 255, 255, 0.9);
 }
+
+ellipse.Point {
+  fill: none;
+  stroke: red;
+}
+
+ellipse.Node {
+  fill: red;
+}
+
+polygon.base {
+  fill: none;
+  stroke-width: 3px;
+  stroke: gray;
+}
+
+polygon.triangle {
+  fill: none;
+  stroke: blue;
+  stroke-width: 1px;
+}
+
+/* text {
+  font-size: 4px;
+} */
