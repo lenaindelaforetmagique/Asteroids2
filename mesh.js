@@ -23,6 +23,25 @@ class Universe {
     this.polygons = [];
 
     this.addEvents();
+    // this.addPoint(5, -300);
+    // this.addPoint(40, 0);
+    // this.addPoint(195, 20);
+    // this.addPoint(200, -100);
+    // this.addPoint(205, -100);
+    // this.addPoint(205, 75);
+    // this.addPoint(200, 75);
+    // this.addPoint(200, 50);
+    // this.addPoint(40, 75);
+    // this.addPoint(30, 100);
+    // this.addPoint(-30, 100);
+    // this.addPoint(-40, 75);
+    // this.addPoint(-200, 50);
+    // this.addPoint(-200, 75);
+    // this.addPoint(-205, 75);
+    // this.addPoint(-205, -100);
+    // this.addPoint(-200, -100);
+    // this.addPoint(-195, 20);
+    // this.addPoint(-40, 0);
   }
 
   init() {
@@ -80,16 +99,6 @@ class Universe {
         case 'M':
           thiz.polygons.last().mesh();
           break;
-
-          // case 'R':
-          //   // refine
-          //   if (thiz.polygon != null) {
-          //     thiz.polygon.refine2();
-          //     let dom = thiz.polygon.domRepr();
-          //     // thiz.init();
-          //     thiz.dom.appendChild(dom);
-          //   }
-          //   break;
         default:
           break;
       }
@@ -105,6 +114,64 @@ class Universe {
         thiz.addPoint(thiz.viewBox.realX(e.clientX), thiz.viewBox.realY(e.clientY));
       }
     }, false);
+
+    document.addEventListener("mousemove", function(e) {
+      e.preventDefault();
+    }, false);
+
+    document.addEventListener("mouseup", function(e) {
+      e.preventDefault();
+    }, false);
+
+    document.addEventListener("wheel", function(e) {
+      e.preventDefault();
+      let k = 1.1;
+      if (e.deltaY > 0) {
+        k = 1 / k;
+      }
+      thiz.viewBox.scale(e.clientX, e.clientY, k);
+    }, false);
+
+    //
+    // // TOUCH events
+    // this.container.addEventListener("touchstart", function(e) {
+    //   e.preventDefault();
+    // }, false);
+    //
+    // this.container.addEventListener("touchmove", function(e) {
+    //   e.preventDefault();
+    // }, false);
+    //
+    // this.container.addEventListener("touchend", function(e) {
+    //   e.preventDefault();
+    // }, false);
+    //
+    // this.container.addEventListener("touchcancel", function(e) {
+    //   e.preventDefault();
+    // }, false);
+    //
+    // this.container.addEventListener("touchleave", function(e) {
+    //   e.preventDefault();
+    // }, false);
+
+    // OTHER events
+    window.onresize = function(e) {
+      thiz.viewBox.resize();
+    }
+
+    // window.onerror = function(msg, source, noligne, nocolonne, erreur) {
+    //   let str = "";
+    //   str += msg;
+    //   str += " * ";
+    //   str += source;
+    //   str += " * ";
+    //   str += noligne;
+    //   str += " * ";
+    //   str += nocolonne;
+    //   str += " * ";
+    //   // str += erreur;
+    //   thiz.console(str);
+    // }
   }
 
 }
@@ -114,8 +181,8 @@ class ViewBox {
     this.parent = parent_;
     this.xMin = 0;
     this.yMin = 0;
-    this.width = 600; //window.innerWidth;
-    this.height = 600; //window.innerHeight;
+    this.width = window.innerWidth;
+    this.height = window.innerHeight;
     this.set();
   }
 
