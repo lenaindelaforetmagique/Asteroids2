@@ -58,26 +58,19 @@ a:active {
 }
 
 ellipse.Point {
+  fill: white;
+  stroke: rgba(0, 0, 200, 1);
+}
+
+polyline {
   fill: none;
+}
+
+polyline.curve {
   stroke: red;
 }
 
-ellipse.Node {
-  fill: red;
-}
-
-polygon {
-  stroke: blue;
-}
-
-polygon.base {
-  fill: rgba(0, 0, 0, 0.1);
-  stroke-width: 3px;
-  /* stroke: blue; */
-}
-
-polygon.triangle {
-  /* fill: none; */
-  /* stroke: blue; */
-  stroke-width: 1px;
+polyline.segments {
+  stroke: black;
+  stroke-dasharray: 4;
 }

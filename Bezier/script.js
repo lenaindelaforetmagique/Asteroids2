@@ -10,47 +10,20 @@ colorGenerator = function(r = 0, g = 0, b = 0, alpha = 1) {
   return `rgba(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)}, ${alpha})`;
 }
 
+
 class Universe {
   constructor() {
     this.container = document.getElementById("container");
     this.dom = document.createElementNS(SVGNS, "svg");
-    this.pointsDom = document.createElementNS(SVGNS, 'g');
-    this.dom.appendChild(this.pointsDom);
     this.container.appendChild(this.dom);
     this.viewBox = new ViewBox(this.dom);
 
+    this.selectedPoint = null;
     this.points = [];
-
-    this.nodes = [];
-    this.polygons = [];
-
+    this.curves = [];
+    this.init();
     this.addEvents();
     let sides = 16;
-
-    for (let i = 0; i < sides; i++) {
-      let angle = 2 * Math.PI * i / sides;
-      let r = (Math.random() * 1.5 + 1) * 100;
-      this.addPoint(-r * Math.sin(angle) + window.innerWidth / 2, r * Math.cos(angle) + window.innerHeight / 2);
-    }
-    // this.addPoint(5, -300);
-    // this.addPoint(40, 0);
-    // this.addPoint(195, 20);
-    // this.addPoint(200, -100);
-    // this.addPoint(205, -100);
-    // this.addPoint(205, 75);
-    // this.addPoint(200, 75);
-    // this.addPoint(200, 50);
-    // this.addPoint(40, 75);
-    // this.addPoint(30, 100);
-    // this.addPoint(-30, 100);
-    // this.addPoint(-40, 75);
-    // this.addPoint(-200, 50);
-    // this.addPoint(-200, 75);
-    // this.addPoint(-205, 75);
-    // this.addPoint(-205, -100);
-    // this.addPoint(-200, -100);
-    // this.addPoint(-195, 20);
-    // this.addPoint(-40, 0);
   }
 
   init() {
@@ -58,78 +31,82 @@ class Universe {
     while (this.dom.firstChild != null) {
       this.dom.removeChild(this.dom.firstChild);
     }
+    this.curvesDom = document.createElementNS(SVGNS, 'g');
+    this.dom.appendChild(this.curvesDom);
 
-    this.nodes = [];
+    this.pointsDom = document.createElementNS(SVGNS, 'g');
+    this.dom.appendChild(this.pointsDom);
+
+
+
     this.points = [];
-    this.polygon = null;
+    this.curves = [];
+    this.selectedPoint = null;
   }
 
   addPoint(x_ = 0, y_ = 0) {
-    let newPoint = new Point(x_, y_);
+    let newPoint = new Point(x_, y_, this);
     this.points.push(newPoint);
     this.pointsDom.appendChild(newPoint.dom);
   }
 
-  addNode(x_ = 0, y_ = 0) {
-    let newNode = new Node(x_, y_);
-    this.nodes.push(newNode);
-    this.dom.appendChild(newNode.dom);
-  }
-
-  addPolygon() {
+  addCurve() {
     if (this.points.length > 0) {
-      let newPolygon = new Polygon(this.points);
-      this.polygons.push(newPolygon);
-      this.dom.appendChild(newPolygon.dom);
+      let newCurve = new BezierCurve(this.points);
+      this.curves.push(newCurve);
+      this.curvesDom.appendChild(newCurve.dom);
       this.points = [];
     }
   }
 
+  updateDom() {
+    for (let point of this.points) {
+      point.updateDom();
+    }
+
+    for (let curve of this.curves) {
+      curve.updateDom();
+    }
+  }
 
   addEvents() {
     let thiz = this;
+
     // KEYBOARD Events
     document.onkeydown = function(e) {
       // console.log(e.key);
       switch (e.key.toUpperCase()) {
         case "ENTER":
-          thiz.addPolygon();
-          thiz.polygons.last().triangulate();
+          thiz.addCurve();
           break;
         case ' ':
           thiz.init();
-          break;
-        case 'R':
-          thiz.polygons.last().refine();
-          break;
-        case 'P':
-          thiz.polygons.last().refine(false);
-          break;
-        case 'M':
-          thiz.polygons.last().mesh();
           break;
         default:
           break;
       }
     }
 
-
     // MOUSE events
     this.container.addEventListener("mousedown", function(e) {
       e.preventDefault();
-      if (e.ctrlKey) {
-        thiz.addNode(thiz.viewBox.realX(e.clientX), thiz.viewBox.realY(e.clientY));
-      } else {
+      if (!thiz.selectedPoint) {
         thiz.addPoint(thiz.viewBox.realX(e.clientX), thiz.viewBox.realY(e.clientY));
       }
     }, false);
 
     document.addEventListener("mousemove", function(e) {
       e.preventDefault();
+      if (thiz.selectedPoint != null) {
+        thiz.selectedPoint.x = thiz.viewBox.realX(e.clientX);
+        thiz.selectedPoint.y = thiz.viewBox.realY(e.clientY);
+        thiz.updateDom();
+      }
     }, false);
 
     document.addEventListener("mouseup", function(e) {
       e.preventDefault();
+      thiz.selectedPoint = null;
     }, false);
 
     document.addEventListener("wheel", function(e) {
