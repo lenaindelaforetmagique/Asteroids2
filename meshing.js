@@ -199,6 +199,8 @@ class Polygon {
     this.meshing.setAttribute("class", 'meshing ');
     this.dom.appendChild(this.meshing);
 
+    this.color = colorGenerator(Math.random() * 256, Math.random() * 256, Math.random() * 256, 0.7);
+
     this.updateDom();
   }
 
@@ -249,6 +251,7 @@ class Polygon {
     TGLEcount++;
     let newTriangle = new Triangle(node0, node1, node2, this);
 
+    // newTriangle.shape.setAttribute('fill', this.color);
     // consolidation
     for (let triangle of this.triangles) {
       if (triangle != null) {

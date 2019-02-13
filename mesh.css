@@ -67,12 +67,12 @@ ellipse.Node {
 }
 
 polygon {
-  fill: none;
   stroke: blue;
 }
 
 polygon.base {
   fill: none;
+  /* fill: rgba(0, 0, 0, 0.1); */
   stroke-width: 3px;
   /* stroke: blue; */
 }

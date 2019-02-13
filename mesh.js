@@ -14,6 +14,8 @@ class Universe {
   constructor() {
     this.container = document.getElementById("container");
     this.dom = document.createElementNS(SVGNS, "svg");
+    this.pointsDom = document.createElementNS(SVGNS, 'g');
+    this.dom.appendChild(this.pointsDom);
     this.container.appendChild(this.dom);
     this.viewBox = new ViewBox(this.dom);
 
@@ -23,6 +25,13 @@ class Universe {
     this.polygons = [];
 
     this.addEvents();
+    let sides = 16;
+
+    // for (let i = 0; i < sides; i++) {
+    //   let angle = 2 * Math.PI * i / sides;
+    //   let r = (Math.random() * 1.5 + 1) * 100;
+    //   this.addPoint(-r * Math.sin(angle) + window.innerWidth / 2, r * Math.cos(angle) + window.innerHeight / 2);
+    // }
     // this.addPoint(5, -300);
     // this.addPoint(40, 0);
     // this.addPoint(195, 20);
@@ -58,7 +67,7 @@ class Universe {
   addPoint(x_ = 0, y_ = 0) {
     let newPoint = new Point(x_, y_);
     this.points.push(newPoint);
-    this.dom.appendChild(newPoint.dom);
+    this.pointsDom.appendChild(newPoint.dom);
   }
 
   addNode(x_ = 0, y_ = 0) {
