@@ -71,7 +71,7 @@ class BezierCurve {
 
   calculatePoints() {
     let result = [];
-    let nbPts = 100;
+    let nbPts = 500;
     for (let i = 0; i < nbPts; i++) {
       let fact = i / (nbPts - 1);
       let newPointList = this.reduceList(this.nodes, fact);
@@ -92,7 +92,4 @@ class BezierCurve {
     }
     return result;
   }
-
-
-
 }

@@ -44,10 +44,16 @@ class Universe {
     this.selectedPoint = null;
   }
 
-  addPoint(x_ = 0, y_ = 0) {
+  addNewPoint(x_ = 0, y_ = 0) {
     let newPoint = new Point(x_, y_, this);
-    this.points.push(newPoint);
     this.pointsDom.appendChild(newPoint.dom);
+    this.addSelectedPoint(newPoint);
+  }
+
+  addSelectedPoint(point_) {
+    if (this.points.indexOf(point_) == -1) {
+      this.points.push(point_);
+    }
   }
 
   addCurve() {
@@ -90,13 +96,18 @@ class Universe {
     // MOUSE events
     this.container.addEventListener("mousedown", function(e) {
       e.preventDefault();
+      thiz.hasMoved = false;
       if (!thiz.selectedPoint) {
-        thiz.addPoint(thiz.viewBox.realX(e.clientX), thiz.viewBox.realY(e.clientY));
+        thiz.addNewPoint(
+          thiz.viewBox.realX(e.clientX),
+          thiz.viewBox.realY(e.clientY)
+        );
       }
     }, false);
 
     document.addEventListener("mousemove", function(e) {
       e.preventDefault();
+      thiz.hasMoved = true;
       if (thiz.selectedPoint != null) {
         thiz.selectedPoint.x = thiz.viewBox.realX(e.clientX);
         thiz.selectedPoint.y = thiz.viewBox.realY(e.clientY);
@@ -106,6 +117,9 @@ class Universe {
 
     document.addEventListener("mouseup", function(e) {
       e.preventDefault();
+      if (thiz.selectedPoint != null && !thiz.hasMoved) {
+        thiz.addSelectedPoint(thiz.selectedPoint);
+      }
       thiz.selectedPoint = null;
     }, false);
 
