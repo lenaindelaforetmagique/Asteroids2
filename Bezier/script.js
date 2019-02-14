@@ -57,7 +57,7 @@ class Universe {
   }
 
   addCurve() {
-    if (this.points.length > 0) {
+    if (this.points.length > 1) {
       let newCurve = new BezierCurve(this.points);
       this.curves.push(newCurve);
       this.curvesDom.appendChild(newCurve.dom);
