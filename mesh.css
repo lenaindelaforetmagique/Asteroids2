@@ -74,11 +74,11 @@ polygon.base {
   fill: none;
   /* fill: rgba(0, 0, 0, 0.1); */
   stroke-width: 3px;
-  /* stroke: blue; */
+  /* stroke: red; */
 }
 
 polygon.triangle {
-  fill: none;
+  /* fill: none; */
   /* stroke: blue; */
   stroke-width: 1px;
 }

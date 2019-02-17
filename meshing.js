@@ -200,7 +200,7 @@ class Polygon {
     this.dom.appendChild(this.meshing);
 
     this.color = colorGenerator(Math.random() * 256, Math.random() * 256, Math.random() * 256, 0.7);
-
+    // this.contour.setAttribute("fill", this.color);
     this.updateDom();
   }
 
@@ -251,16 +251,90 @@ class Polygon {
     TGLEcount++;
     let newTriangle = new Triangle(node0, node1, node2, this);
 
-    // newTriangle.shape.setAttribute('fill', this.color);
+    newTriangle.shape.setAttribute('fill', this.color);
     // consolidation
     for (let triangle of this.triangles) {
       if (triangle != null) {
         triangle.addNeighbour(newTriangle);
       }
     }
-
     this.triangles.push(newTriangle);
   }
+
+  recalContour() {
+    // from triangles list, calculates the points list
+    // all edges
+    let allEdges = [];
+    for (let triangle of this.triangles) {
+      for (let i = 0; i < triangle.neighbours.length; i++) {
+        if (triangle.neighbours[i] == null) {
+          allEdges.push([triangle.nodes[i], triangle.nodes[(i + 1) % 3]]);
+        }
+      }
+    }
+
+    // order
+    let orderedEdges = [];
+    orderedEdges.push(allEdges[0]);
+    allEdges.splice(0, 1);
+    while (allEdges.length > 0) {
+      let i = 0;
+      while (orderedEdges.last()[1] != allEdges[i][0]) {
+        i++;
+      }
+      orderedEdges.push(allEdges[i]);
+      allEdges.splice(i, 1);
+    }
+
+    // rebuild this.points
+    this.points = [];
+    for (let edge of orderedEdges) {
+      this.points.push(new Point(edge[0].position.x, edge[0].position.y));
+    }
+  }
+
+  splitIntoPieces(nbPieces) {
+    // returns an array of polygons
+    let sizeMax = Math.ceil(this.triangles.length / nbPieces);
+    let newPolygons = [];
+    while (this.triangles.length > 0) {
+      let newPolygon = new Polygon();
+      let iRnd = Math.floor((Math.random() * this.triangles.length));
+      let candidates = [this.triangles[iRnd]];
+      while (newPolygon.triangles.length < sizeMax && candidates.length > 0) {
+        iRnd = 0 * Math.floor((Math.random() * candidates.length));
+        let newTriangle = candidates[iRnd];
+        candidates.splice(iRnd, 1);
+
+        // add neighbours to candidates
+        for (let neighbour of newTriangle.neighbours) {
+          if ((neighbour != null) && (candidates.indexOf(neighbour) == -1)) {
+            candidates.push(neighbour);
+          }
+        }
+        this.removeTriangle(newTriangle);
+        newPolygon.addTriangle(newTriangle.nodes[0], newTriangle.nodes[1], newTriangle.nodes[2]);
+      }
+      // check for orphans
+      for (let newTriangle of candidates) {
+        if (newTriangle.neighbours[0] == null &&
+          newTriangle.neighbours[1] == null &&
+          newTriangle.neighbours[2] == null
+        ) {
+          this.removeTriangle(newTriangle);
+          newPolygon.addTriangle(newTriangle.nodes[0], newTriangle.nodes[1], newTriangle.nodes[2]);
+        }
+
+
+      }
+
+      newPolygon.recalContour();
+      newPolygons.push(newPolygon);
+      this.cleanTrianglesTable();
+    }
+    return newPolygons;
+  }
+
 
   removeTriangle(triangle_) {
     let pos = this.triangles.indexOf(triangle_);
@@ -275,6 +349,7 @@ class Polygon {
   }
 
   cleanTrianglesTable() {
+    // removes all blank spaces
     let i = 0;
     while (i < this.triangles.length) {
       if (this.triangles[i] == null) {
@@ -491,130 +566,6 @@ class Polygon {
       }
       return !pointContained;
     }
-  }
-
-}
-
-class Polygon_old {
-  listPts() {
-    let res = "";
-    for (let point of this.points) {
-      res += (point.x) + ',' + (point.y) + ' ';
-    }
-    return res;
-  }
-
-  centerOfGravity() {
-    if (this.triangles.length == 0) {
-      this.triangulate();
-    }
-
-    let center = new Vector();
-    let totalArea = 0;
-    for (let triangle of this.triangles) {
-      let area = triangle.area();
-      let curCenter = triangle.centerOfGravity();
-      curCenter.mult(area);
-      center.add(curCenter);
-      totalArea += area;
-    }
-    center.div(totalArea);
-    return center;
-  }
-
-  center() {
-
-    let res = new Vector();
-    for (let point of this.points) {
-      res.add(point);
-    }
-    res.div(this.points.length);
-    return res;
-  }
-
-  reCenter() {
-    let centerPos = this.centerOfGravity();
-    for (let i = 0; i < this.points.length; i++) {
-      this.points[i].sub(centerPos);
-    }
-    return centerPos;
-  }
-
-  segmentLength(i_) {
-    if (i_ < 0 || i_ >= this.points.length) {
-      i_ = 0;
-    }
-    let pointA = this.points[i_].copy();
-    let pointB;
-    if (i_ == this.points.length - 1) {
-      pointB = this.points[0].copy();
-    } else {
-      pointB = this.points[i_ + 1].copy();
-    }
-    pointA.sub(pointB);
-    return pointA.norm();
-  }
-
-  insertMidPoint(i_) {
-    if (i_ < 0 || i_ >= this.points.length) {
-      i_ = 0;
-    }
-    let pointA = this.points[i_].copy();
-    let pointB;
-    if (i_ == this.points.length - 1) {
-      pointB = this.points[0].copy();
-    } else {
-      pointB = this.points[i_ + 1].copy();
-    }
-
-    // let vectAB = pointB.copy();
-    // vectAB.sub(pointA);
-    // // let a=vectAB.norm();
-    // vectAB = new Vector(vectAB.y, -vectAB.x);
-    // vectAB.mult(0.025 * 1);
-    // if (vectAB.x > 0) {
-    //   vectAB.mult(-1);
-    // }
-
-
-    pointA.add(pointB);
-    pointA.div(2);
-    // pointA.add(vectAB);
-
-    this.points.splice(i_ + 1, 0, pointA);
-  }
-
-  refine() {
-    let minLength = Number.MAX_SAFE_INTEGER;
-
-    for (let i = 0; i < this.points.length; i++) {
-      minLength = Math.min(minLength, this.segmentLength(i));
-    }
-    let maxLength = minLength * 3;
-
-    let i = 0;
-    while (i < this.points.length) {
-      if (this.segmentLength(i) > maxLength) {
-        this.insertMidPoint(i);
-      } else {
-        i++;
-      }
-    }
-  }
-
-  refine2() {
-    let minLength = Number.MAX_SAFE_INTEGER;
-
-    for (let i = 0; i < this.points.length; i++) {
-      minLength = Math.min(minLength, this.segmentLength(i));
-    }
-    let maxLength = minLength * 2;
-
-    let newTriangles = [];
-    for (let triangle of this.triangles) {
-      newTriangles = newTriangles.concat(triangle.refine(maxLength));
-    }
-    this.triangles = newTriangles;
   }
 
 }

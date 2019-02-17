@@ -27,18 +27,16 @@ class Universe {
     this.addEvents();
     let sides = 16;
 
-    // for (let i = 0; i < sides; i++) {
-    //   let angle = 2 * Math.PI * i / sides;
-    //   let r = (Math.random() * 1.5 + 1) * 100;
-    //   this.addPoint(-r * Math.sin(angle) + window.innerWidth / 2, r * Math.cos(angle) + window.innerHeight / 2);
-    // }
-    // this.addPoint(5, -300);
-    // this.addPoint(40, 0);
-    // this.addPoint(195, 20);
-    // this.addPoint(200, -100);
-    // this.addPoint(205, -100);
-    // this.addPoint(205, 75);
-    // this.addPoint(200, 75);
+    for (let i = 0; i < sides; i++) {
+      let angle = 2 * Math.PI * i / sides;
+      let r = (Math.random() * 1 + 1.5) * 100;
+      this.addPoint(-r * Math.sin(angle) + window.innerWidth / 2, r * Math.cos(angle) + window.innerHeight / 2);
+    }
+    this.addPolygon();
+    this.polygons.last().triangulate();
+    this.polygons.last().refine();
+    // this.polygons.last().refine();
+    // this.polygons.last().splitIntoPieces(4);
     // this.addPoint(200, 50);
     // this.addPoint(40, 75);
     // this.addPoint(30, 100);
@@ -58,6 +56,8 @@ class Universe {
     while (this.dom.firstChild != null) {
       this.dom.removeChild(this.dom.firstChild);
     }
+    this.pointsDom = document.createElementNS(SVGNS, 'g');
+    this.dom.appendChild(this.pointsDom);
 
     this.nodes = [];
     this.points = [];
@@ -79,10 +79,26 @@ class Universe {
   addPolygon() {
     if (this.points.length > 0) {
       let newPolygon = new Polygon(this.points);
+      this.points = [];
       this.polygons.push(newPolygon);
       this.dom.appendChild(newPolygon.dom);
-      this.points = [];
     }
+  }
+
+  splitAction() {
+    let polygon = this.polygons.last();
+    let newPolygons = polygon.splitIntoPieces(2);
+    this.dom.removeChild(polygon.dom);
+    for (let newPolygon of newPolygons) {
+      if (newPolygon.triangles.length > 0) {
+        newPolygon.updateDom();
+        this.polygons.push(newPolygon);
+        this.dom.appendChild(newPolygon.dom);
+      }
+
+    }
+
+
   }
 
 
@@ -107,6 +123,9 @@ class Universe {
           break;
         case 'M':
           thiz.polygons.last().mesh();
+          break;
+        case 'S':
+          thiz.splitAction();
           break;
         default:
           break;

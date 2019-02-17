@@ -1,0 +1,35 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Ubuntu Mono', monospace;
+  /* background-color: blue; */
+}
+
+svg {
+  /* margin: 0; */
+  /* padding: 0; */
+  width: 100%;
+  height: 100%;
+}
+
+svg, legend {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  height: 100%;
+  width: 100%;
+}
+
+.button {
+  cursor: pointer;
+}
+
+#container {
+  margin: 0;
+  padding: 0;
+  background: #ADD8E6;
+  height: 100%;
+  /* overflow: hidden; */
+}
