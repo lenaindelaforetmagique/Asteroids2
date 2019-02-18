@@ -25,13 +25,16 @@ header {
   color: white;
 }
 
+p {
+  color: white;
+}
+
 footer {
   position: absolute;
   top: 95%;
   left: 50%;
   -ms-transform: translate(-50%, -50%);
   transform: translate(-50%, -50%);
-  color: white;
 }
 
 a {

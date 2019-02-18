@@ -11,6 +11,9 @@ class Universe {
     this.grenades = [];
 
     this.container = document.getElementById("container");
+    while (this.container.firstChild != null) {
+      this.container.removeChild(this.container.firstChild);
+    }
     this.dom = document.createElementNS(SVGNS, "svg");
     this.container.appendChild(this.dom);
     this.viewBox = new ViewBox(this.dom);
