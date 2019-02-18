@@ -579,7 +579,6 @@ class TextBlock {
     this.dom.appendChild(this.text);
     this.text.setAttributeNS(null, "x", 5);
     this.text.setAttributeNS(null, "y", 30);
-    this.text.setAttributeNS(null, "fill", "rgba(0,0,0,0.7)");
 
     this.title = document.createElementNS(SVGNS, "tspan");
     this.text.appendChild(this.title);
@@ -591,14 +590,21 @@ class TextBlock {
     // this.description.setAttributeNS(null, "x", 0);
     // this.description.setAttributeNS(null, "dy", 20);
 
-    this.btn1 = document.createElementNS(SVGNS, "text");
-    this.btn1.setAttributeNS(null, "fill", "rgba(0,0,0,0.7)");
-    this.dom.appendChild(this.btn1);
+    this.line1 = document.createElementNS(SVGNS, "text");
+    this.dom.appendChild(this.line1);
     // this.btn1.setAttributeNS(null, "class", "button");
-    this.btn1.setAttributeNS(null, "font-size", "12px");
-    this.btn1.setAttributeNS(null, "x", 5);
-    this.btn1.setAttributeNS(null, "y", 60);
-    this.btn1.textContent = "'S' to shoot, arrows to move, space to restart. Try to stay alive! ";
+    this.line1.setAttributeNS(null, "font-size", "12px");
+    this.line1.setAttributeNS(null, "x", 5);
+    this.line1.setAttributeNS(null, "y", 60);
+    this.line1.textContent = "Controls : arrows to move, 'S' for normal shoot, 'G' for grenades, 'space' to restart.";
+
+    this.line2 = document.createElementNS(SVGNS, "text");
+    this.dom.appendChild(this.line2);
+    // this.btn1.setAttributeNS(null, "class", "button");
+    this.line2.setAttributeNS(null, "font-size", "12px");
+    this.line2.setAttributeNS(null, "x", 5);
+    this.line2.setAttributeNS(null, "y", 80);
+    this.line2.textContent = "Try to stay alive! ";
 
     // this.title.textContent = "Asteroids 2 - Level 1";
 
